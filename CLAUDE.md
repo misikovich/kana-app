@@ -1,0 +1,46 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project
+
+Kanapp: a Qt Widgets desktop app (C++) for learning Japanese kana. It has a browse mode (step through hiragana/katakana and play each one's pronunciation) and a timed quiz (type the romaji). It was written as a learning project. Identifiers, comments, and UI strings are mostly in **French** (`Fenetre` = window, `Liste` = list, `Sons` = sounds, `niveau` = level, `fautes` = mistakes, `Retour` = back). Keep new code consistent with that.
+
+## Build & run
+
+There are no tests and no linter. The code builds with **Qt 6** (Widgets + Multimedia). `CMakeLists.txt` is the main build; `kanapp.pro` (qmake) still works for native builds, and each must list any new source file.
+
+```sh
+# Native Linux build (apt: qt6-base-dev qt6-multimedia-dev cmake ninja-build)
+cmake -S . -B build-linux -G Ninja && cmake --build build-linux && ./build-linux/kanapp
+
+# Windows x86_64 cross-build + portable package -> dist/kanapp-windows.zip
+./build-windows.sh
+```
+
+How the Windows cross-build works (`build-windows.sh`, `cmake/mingw-w64-x86_64.cmake`):
+- The compiler is Ubuntu's `x86_64-w64-mingw32-g++-posix`. It targets msvcrt, the same runtime as Qt's official MinGW builds, so their DLLs are ABI-compatible.
+- The Windows Qt comes from Qt's official MinGW binaries (only the `qtbase` and `qtmultimedia` .7z archives), extracted into `~/qt-win` (override with `QT_WIN`). They are under `https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt6_<ver>/qt6_<ver>_mingw/`. `aqtinstall` failed to parse that repo, so the archives were fetched by hand.
+- Cross-building with Qt 6 needs a **host Qt of exactly the same version** for moc/rcc. That is the distro Qt in `/usr` (`QT_HOST_PATH`), currently 6.11.2. After a distro Qt upgrade, download the matching Windows Qt.
+- Qt's `windeployqt` only runs on Windows, so the script does the deployment itself. It copies the plugins (platforms, styles, multimedia, imageformats), then walks the PE imports with `objdump` to collect the Qt, FFmpeg and MinGW runtime DLLs.
+- To smoke-test the package: `xvfb-run wine dist/kanapp-windows/kanapp.exe`.
+
+## Architecture
+
+- `main.cpp` creates `FenetreKana` (a `QMainWindow`). It owns a `QStackedWidget` with fixed page indices:
+  - `0` `WidgetPrincipal`: menu with the "learn" and "quiz" buttons
+  - `1` `WidgetKana`: kana browser
+  - `2` `WidgetQuizz`: the quiz
+  - `3` `WidgetFinQuizz`: end-of-quiz score screen
+
+  Navigation calls `setCurrentIndex(n)` with these hard-coded indices, so changing the page order means updating every one of those call sites. Each page has its own toolbar (`toolBarKana` / `toolBarQuizz`), and visibility is toggled per page. Every page change runs a fade animation through `FaderWidget`, and `WidgetQuizz` uses the same pattern internally.
+- Keyboard input for the browser is handled centrally in `FenetreKana::keyPressEvent`, not in `WidgetKana`: Left/Right steps through kana, Up/Down switches between Hiragana and Katakana, Space reveals the romaji.
+- **Kana data** lives in `ListeKana`, which holds parallel hard-coded arrays (hiragana, katakana, and romaji shared by both scripts, 46 each per `HIRAGANA_SIZE`/`KATAKANA_SIZE`). `Kana` is a plain value holder.
+- **Audio**: `WidgetKana::pronounce()` plays, through a `QSoundEffect`, `qrc:/sons/ressources/sons/<romaji>.wav`. Each romaji therefore needs a matching `.wav` in `ressources/sons/` and an entry in `Sons.qrc`. (This is why `wi`/`we` are left out.)
+- **Quiz flow** (`WidgetQuizz`): the player picks a level, which sets the per-kana countdown to 10, 20, or 30 s. `TimeCompteur` (a QLCDNumber + QTimer) emits `finCompteur()` when it runs out. That counts as a mistake and moves to the next question. Answers are checked on each keystroke (`textEdited` → `gereReponse`). After more than 5 mistakes the widget emits `finPartie()`, and `FenetreKana` then shows page 3.
+- **Score persistence** (`GestionScore`): free functions that read and write a single integer best score in a plain-text file at `cheminScore()`, which is `QStandardPaths::AppDataLocation/score_data` (e.g. `%APPDATA%/Najimi/Kana Learning/` on Windows). The repo's `score_data` file is unused.
+- Resource paths keep the full on-disk prefix: `:/images/ressources/images/...`, `:/sons/ressources/sons/...`.
+
+## Dead / unwired files
+
+These files are not listed in `kanapp.pro` and are not used by the build: `KanaLabel.*`, `ListeDeroulante.h`, `Score.qrc` (empty), and `PagePrincipale.qml`/`Button.qml` (listed only as `OTHER_FILES`). `KanaLabel.*` does not compile.
