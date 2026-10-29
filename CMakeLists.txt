@@ -29,8 +29,11 @@ qt_add_executable(kanapp WIN32 MACOSX_BUNDLE
     PracticeEndWidget.cpp PracticeEndWidget.h
     ScoreStorage.cpp ScoreStorage.h
     Language.cpp Language.h
+    Theme.cpp Theme.h
+    KanaSquare.cpp KanaSquare.h
     Images.qrc
     Sons.qrc
+    Fonts.qrc
 )
 
 # English is the source language; the .qm files are embedded under :/i18n/

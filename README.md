@@ -30,6 +30,8 @@ This is a **fork** of [kana-app/kana-app](https://github.com/kana-app/kana-app),
 
 **Quiz:** the same kana and time choices as practice. One kana is shown with 4 possible romaji: click the right one or press 1–4. A wrong answer or running out of time is a mistake, and the game ends after more than 5 mistakes. The quiz keeps its own best scores.
 
+The *Theme* menu switches between a light and a dark theme, or follows the system setting.
+
 The interface is available in English, French and Russian: pick one from the *Language* menu. On first launch the app follows the system language.
 
 ## Building

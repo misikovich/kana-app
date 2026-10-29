@@ -16,7 +16,9 @@ SOURCES += \
     KanaCard.cpp \
     PracticeEndWidget.cpp \
     ScoreStorage.cpp \
-    Language.cpp
+    Language.cpp \
+    Theme.cpp \
+    KanaSquare.cpp
 
 HEADERS += \
     Kana.h \
@@ -29,7 +31,9 @@ HEADERS += \
     KanaCard.h \
     PracticeEndWidget.h \
     ScoreStorage.h \
-    Language.h
+    Language.h \
+    Theme.h \
+    KanaSquare.h
 
 # English is the source language, the .qm files are embedded under :/i18n/
 TRANSLATIONS += \
@@ -38,7 +42,8 @@ TRANSLATIONS += \
 
 RESOURCES += \
     Images.qrc \
-    Sons.qrc
+    Sons.qrc \
+    Fonts.qrc
 
 OTHER_FILES += \
     PagePrincipale.qml \

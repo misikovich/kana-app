@@ -12,6 +12,9 @@ public:
     KanaList();
     Kana* getSelected();
     bool moveSelection(bool);
+    //position of the selected kana, from 0 to count()-1
+    int getSelectedIndex();
+    int count();
     Kana* getSelected(bool hiragana);
     //random kana among the chosen scripts ( at least one must be true )
     Kana* getShuffledKana(bool hiragana=true, bool katakana=true);

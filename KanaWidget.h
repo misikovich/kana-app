@@ -13,6 +13,7 @@
 #include <QKeyEvent>
 #include <QUrl>
 #include <QSoundEffect>
+#include "KanaSquare.h"
 
 /* class allowing to display the list of kanas */
 class KanaWidget : public QWidget
@@ -21,7 +22,6 @@ class KanaWidget : public QWidget
 public:
     KanaWidget();
     void showCurrentKana();
-    void createIcons();
     void changeEvent(QEvent* event);
     void retranslate();
 
@@ -37,8 +37,10 @@ private:
     bool romaji_visible;
     bool hiragana;
     KanaList* kana_list;
-    QLabel* japanese_label;
+    KanaSquare* japanese_square;
     QLabel* romaji_label;
+    //position in the list, like 12 / 46
+    QLabel* position_label;
     Kana* getCurrentKana();
     //show_romaji button whose text changes when it is pressed
     QPushButton* hide_romaji_button;

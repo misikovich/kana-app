@@ -17,6 +17,7 @@
 #include "PracticeEndWidget.h"
 #include "ScoreStorage.h"
 #include "Language.h"
+#include "Theme.h"
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -39,6 +40,8 @@ public slots:
     void fadeInWidget(int index);
     void showPracticeEnd();
     void changeLanguage(QAction* action);
+    void changeTheme(QAction* action);
+    void setScript(int script);
 
 
 
@@ -52,13 +55,15 @@ private:
     //same widget in quiz mode ( 4 answers to choose from )
     PracticeWidget *quiz_widget;
     PracticeEndWidget *practice_end_widget;
-    QComboBox *kana_combo_box;
+    //index 0: hiragana, index 1: katakana
+    QButtonGroup *script_group;
     QStackedWidget *stacked_widgets;
     //texts to retranslate
     QMenu *about_menu;
     QAction *note_action;
     QMenu *language_menu;
-    QLabel *kana_choice_label;
+    QMenu *theme_menu;
+    QActionGroup *theme_group;
     QPushButton *kana_back_button;
     QPushButton *practice_back_button;
     //enables the animation:

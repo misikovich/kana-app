@@ -30,8 +30,10 @@ QWidget* PracticeWidget::createSettingsPage()
     QWidget *page = new QWidget;
 
     //kana choice: at least one of the two stays checked
-    hiragana_check = new QCheckBox;
-    katakana_check = new QCheckBox;
+    hiragana_check = new QPushButton;
+    katakana_check = new QPushButton;
+    hiragana_check->setCheckable(true);
+    katakana_check->setCheckable(true);
     hiragana_check->setChecked(settings.value(settings_prefix+"hiragana",true).toBool());
     katakana_check->setChecked(settings.value(settings_prefix+"katakana",true).toBool());
     if (!hiragana_check->isChecked() && !katakana_check->isChecked())
@@ -39,6 +41,7 @@ QWidget* PracticeWidget::createSettingsPage()
     QObject::connect(hiragana_check,SIGNAL(toggled(bool)),this,SLOT(keepOneKanaChecked()));
     QObject::connect(katakana_check,SIGNAL(toggled(bool)),this,SLOT(keepOneKanaChecked()));
     QHBoxLayout *kana_row = new QHBoxLayout;
+    kana_row->setSpacing(6);
     kana_row->addWidget(hiragana_check);
     kana_row->addWidget(katakana_check);
     kana_row->addStretch();
@@ -46,6 +49,7 @@ QWidget* PracticeWidget::createSettingsPage()
     //time per kana, as a row of toggle buttons
     time_group = new QButtonGroup(this);
     QHBoxLayout *time_row = new QHBoxLayout;
+    time_row->setSpacing(6);
     int seconds[4]={10,20,30,0};
     for (int s : seconds)
     {
@@ -62,6 +66,7 @@ QWidget* PracticeWidget::createSettingsPage()
     //number of kana shown at the same time
     count_group = new QButtonGroup(this);
     QHBoxLayout *count_row = new QHBoxLayout;
+    count_row->setSpacing(6);
     int counts[3]={1,2,4};
     for (int c : counts)
     {
@@ -74,10 +79,17 @@ QWidget* PracticeWidget::createSettingsPage()
     QAbstractButton *saved_count = count_group->button(settings.value(settings_prefix+"cards",1).toInt());
     (saved_count ? saved_count : count_group->button(1))->setChecked(true);
 
+    page_title = new QLabel;
+    page_title->setProperty("role","title");
     kana_title = new QLabel;
     time_title = new QLabel;
     count_title = new QLabel;
+    for (QLabel *title : {kana_title,time_title,count_title})
+        title->setProperty("role","muted");
     QFormLayout *form = new QFormLayout;
+    form->setHorizontalSpacing(20);
+    form->setVerticalSpacing(14);
+    form->setLabelAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     form->addRow(kana_title,kana_row);
     form->addRow(time_title,time_row);
     form->addRow(count_title,count_row);
@@ -85,9 +97,18 @@ QWidget* PracticeWidget::createSettingsPage()
     form->setRowVisible(count_title,!quiz_mode);
 
     best_label = new QLabel;
+    best_label->setProperty("role","muted");
     start_button = new QPushButton;
+    start_button->setProperty("role","primary");
+    start_button->setMinimumWidth(120);
     start_button->setDefault(true);
     QObject::connect(start_button,SIGNAL(clicked()),this,SLOT(startGame()));
+    //Enter starts the game too
+    for (int key : {Qt::Key_Return,Qt::Key_Enter})
+    {
+        QShortcut *start_shortcut = new QShortcut(QKeySequence(key),page);
+        QObject::connect(start_shortcut,&QShortcut::activated,start_button,&QPushButton::click);
+    }
 
     QHBoxLayout *bottom_row = new QHBoxLayout;
     bottom_row->addWidget(best_label);
@@ -95,16 +116,15 @@ QWidget* PracticeWidget::createSettingsPage()
     bottom_row->addWidget(start_button);
 
     //the settings stay compact in the middle of the page
-    QWidget *panel = new QWidget;
-    panel->setMaximumWidth(520);
-    //makes the chosen time and number of kana stand out
-    panel->setStyleSheet("QPushButton { min-width: 3em; padding: 4px 10px; border: 1px solid #aaaaaa;"
-                         " border-radius: 4px; background-color: #fafafa; }"
-                         "QPushButton:hover { border-color: #22BBD6; }"
-                         "QPushButton:checked { background-color: #22BBD6; color: white; border-color: #1a8fa5; }");
+    QFrame *panel = new QFrame;
+    panel->setObjectName("panel");
+    panel->setMaximumWidth(560);
     QVBoxLayout *panel_layout = new QVBoxLayout(panel);
+    panel_layout->setContentsMargins(28,24,28,24);
+    panel_layout->addWidget(page_title);
+    panel_layout->addSpacing(16);
     panel_layout->addLayout(form);
-    panel_layout->addSpacing(12);
+    panel_layout->addSpacing(24);
     panel_layout->addLayout(bottom_row);
 
     QVBoxLayout *layout = new QVBoxLayout(page);
@@ -120,14 +140,25 @@ QWidget* PracticeWidget::createGamePage()
     QVBoxLayout *layout = new QVBoxLayout(page);
 
     score_label = new QLabel;
-    layout->addWidget(score_label);
+    score_label->setProperty("role","heading");
+    mistakes_label = new QLabel;
+    mistakes_label->setProperty("role","muted");
+    QHBoxLayout *score_row = new QHBoxLayout;
+    score_row->addWidget(score_label);
+    score_row->addStretch();
+    score_row->addWidget(mistakes_label);
+    layout->addLayout(score_row);
 
     cards_layout = new QGridLayout;
     layout->addLayout(cards_layout,1);
 
     //OK! or the right answer, fading out
     feedback_label = new QLabel;
-    feedback_label->setFont(QFont("Ubuntu",20));
+    QFont feedback_font = font();
+    feedback_font.setPixelSize(24);
+    feedback_font.setWeight(QFont::DemiBold);
+    feedback_label->setFont(feedback_font);
+    feedback_label->setMinimumHeight(QFontMetrics(feedback_font).height()+8);
     feedback_label->setAlignment(Qt::AlignCenter);
     QGraphicsOpacityEffect *feedback_effect = new QGraphicsOpacityEffect(feedback_label);
     feedback_effect->setOpacity(0);
@@ -141,10 +172,16 @@ QWidget* PracticeWidget::createGamePage()
 
     answer_input = new QLineEdit;
     answer_input->setMaxLength(3);
+    QFont input_font = font();
+    input_font.setPixelSize(20);
+    answer_input->setFont(input_font);
+    answer_input->setAlignment(Qt::AlignCenter);
     QObject::connect(answer_input,SIGNAL(textEdited(QString)),this,SLOT(handleAnswer(QString)));
 
     //only in unlimited time: fades in after 10 s on the same kana
     skip_button = new QPushButton;
+    skip_button->setProperty("role","ghost");
+    skip_button->setFocusPolicy(Qt::NoFocus);
     skip_effect = new QGraphicsOpacityEffect(skip_button);
     skip_button->setGraphicsEffect(skip_effect);
     skip_animation = new QPropertyAnimation(skip_effect,"opacity",this);
@@ -173,8 +210,11 @@ QWidget* PracticeWidget::createGamePage()
     for (int i=0;i<4;i++)
     {
         QPushButton *button = new QPushButton;
-        button->setFont(QFont("Ubuntu",22));
-        button->setMinimumHeight(60);
+        QFont choice_font = font();
+        choice_font.setPixelSize(22);
+        button->setFont(choice_font);
+        button->setProperty("role","choice");
+        button->setMinimumHeight(64);
         button->setFocusPolicy(Qt::NoFocus);
         choice_group->addButton(button,i);
         choices_row->addWidget(button);
@@ -201,6 +241,7 @@ void PracticeWidget::changeEvent(QEvent* event)
 
 void PracticeWidget::retranslate()
 {
+    page_title->setText(quiz_mode ? tr("Quiz") : tr("Practice"));
     kana_title->setText(tr("Kana:"));
     hiragana_check->setText("あ  "+tr("Hiragana"));
     katakana_check->setText("ア  "+tr("Katakana"));
@@ -256,7 +297,7 @@ void PracticeWidget::updateBestScore()
 void PracticeWidget::keepOneKanaChecked()
 {
     if (!hiragana_check->isChecked() && !katakana_check->isChecked())
-        qobject_cast<QCheckBox*>(sender())->setChecked(true);
+        qobject_cast<QAbstractButton*>(sender())->setChecked(true);
 }
 
 void PracticeWidget::startGame()
@@ -279,11 +320,10 @@ void PracticeWidget::startGame()
     qDeleteAll(cards);
     cards.clear();
     selected_card=nullptr;
-    int font_size = count==1 ? 150 : count==2 ? 110 : 80;
     int columns = count==4 ? 2 : count;
     for (int i=0;i<count;i++)
     {
-        KanaCard *card = new KanaCard(font_size);
+        KanaCard *card = new KanaCard;
         cards_layout->addWidget(card,i/columns,i%columns);
         cards.append(card);
         QObject::connect(card,SIGNAL(clicked(KanaCard*)),this,SLOT(selectCard(KanaCard*)));
@@ -376,8 +416,7 @@ void PracticeWidget::mistake(KanaCard *card)
     //the streak of correct answers is broken
     streak=false;
     //shows the right answer
-    showFeedback("<font color='red'>"+card->getKana()->getJapanese()+" = "
-                 +card->getKana()->getRomaji()+"</font>");
+    showFeedback(colored(card->getKana()->getJapanese()+" = "+card->getKana()->getRomaji(),false));
 
     // if the number of mistakes is >5 everything is stopped
     if (mistakes>5)
@@ -415,13 +454,17 @@ void PracticeWidget::showFeedback(const QString &text)
     feedback_animation->start();
 }
 
+QString PracticeWidget::colored(const QString &text, bool right)
+{
+    QColor color = right ? themeColors().correct : themeColors().wrong;
+    return "<font color='"+color.name()+"'>"+text.toHtmlEscaped()+"</font>";
+}
+
 void PracticeWidget::updateScore()
 {
     //display of the score and of the mistake count
-    QString score_text(tr("Score: %1").arg(score));
-    if (mistakes!=0)
-        score_text.append("   "+tr("Mistakes: %1").arg(mistakes));
-    score_label->setText(score_text);
+    score_label->setText(tr("Score: %1").arg(score));
+    mistakes_label->setText(mistakes!=0 ? tr("Mistakes: %1").arg(mistakes) : "");
 }
 
 void PracticeWidget::fillChoices()
@@ -460,7 +503,7 @@ void PracticeWidget::handleChoice(int index)
         gain*=2;
     score+=gain;
     streak=true;
-    showFeedback("<font color='green'>OK!</font>");
+    showFeedback(colored("OK!",true));
     replaceKana(card);
     updateScore();
 }
@@ -491,17 +534,17 @@ void PracticeWidget::handleAnswer(QString answer)
             gain*=2;
         score+=gain;
         streak=true;
-        showFeedback("<font color='green'>OK!</font>");
+        showFeedback(colored("OK!",true));
         replaceKana(selected_card);
         updateScore();
     }
     else if (solution.startsWith(answer))
-        selected_card->setTyped("<font color='green'>"+answer+"</font>");
+        selected_card->setTyped(colored(answer,true));
     else if (isUnlimited() && answer.size()>=solution.size())
         //without a timer, a complete wrong answer is the mistake
         mistake(selected_card);
     else
-        selected_card->setTyped("<font color='red'>"+answer+"</font>");
+        selected_card->setTyped(colored(answer,false));
 }
 
 //animation handling when the page changes

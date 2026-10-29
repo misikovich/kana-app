@@ -5,12 +5,18 @@ PracticeEndWidget::PracticeEndWidget()
     score =0;
     end_label = new QLabel;
 
-    end_label->setFont(QFont("Ubuntu",40));
+    end_label->setProperty("role","title");
     score_label = new QLabel;
+    QFont score_font = font();
+    score_font.setPixelSize(30);
+    score_label->setFont(score_font);
 
     QVBoxLayout *layout = new QVBoxLayout;
+    layout->addStretch(2);
     layout->addWidget(end_label,0,Qt::AlignCenter);
+    layout->addSpacing(8);
     layout->addWidget(score_label,0,Qt::AlignCenter);
+    layout->addStretch(3);
     setLayout(layout);
     retranslate();
 

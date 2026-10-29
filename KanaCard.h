@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 #include <QMouseEvent>
 #include "Kana.h"
+#include "KanaSquare.h"
 
 //one kana shown in the practice, with its own countdown
 //the player clicks a card to select it, then types its romaji
@@ -14,7 +15,7 @@ class KanaCard : public QFrame
 {
     Q_OBJECT
 public:
-    explicit KanaCard(int font_size, QWidget *parent=nullptr);
+    explicit KanaCard(QWidget *parent=nullptr);
     //shows a new kana, seconds=0 means unlimited time
     void setKana(Kana* kana, int seconds);
     Kana* getKana();
@@ -33,8 +34,10 @@ protected:
 private slots:
     void decrement();
 private:
+    void showRemaining();
+private:
     Kana* kana;
-    QLabel *kana_label;
+    KanaSquare *kana_square;
     QLabel *typed_label;
     QLabel *time_label;
     QTimer *timer;

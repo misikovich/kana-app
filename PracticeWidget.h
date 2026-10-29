@@ -21,6 +21,7 @@
 #include "KanaCard.h"
 #include "FaderWidget.h"
 #include "ScoreStorage.h"
+#include "Theme.h"
 
 
 class PracticeWidget : public QWidget
@@ -63,6 +64,8 @@ private:
     void fillChoices();
     void restartSkipTimer();
     void showFeedback(const QString &text);
+    //text in the color of a right or wrong answer
+    QString colored(const QString &text, bool right);
     void updateScore();
     void endGame();
 
@@ -74,9 +77,11 @@ private:
     QPointer<FaderWidget> faderWidget;
 
     //settings page
+    QLabel *page_title;
     QLabel *kana_title;
-    QCheckBox *hiragana_check;
-    QCheckBox *katakana_check;
+    //toggle buttons, at least one stays checked
+    QPushButton *hiragana_check;
+    QPushButton *katakana_check;
     QLabel *time_title;
     QButtonGroup *time_group; // button id = seconds, 0 = unlimited
     QLabel *count_title;
@@ -86,6 +91,7 @@ private:
 
     //game page
     QLabel *score_label;
+    QLabel *mistakes_label;
     QGridLayout *cards_layout;
     QList<KanaCard*> cards;
     KanaCard *selected_card;

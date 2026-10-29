@@ -1,4 +1,5 @@
 #include "KanaWidget.h"
+#include "Theme.h"
 //widget to display the list of kanas
 KanaWidget::KanaWidget()
 {
@@ -7,91 +8,54 @@ KanaWidget::KanaWidget()
     romaji_visible=true;
     kana_list = new KanaList();
     sound = new QSoundEffect(this);
+
+    japanese_square = new KanaSquare;
+    japanese_square->setMinimumSize(160,160);
+    japanese_square->setMaximumHeight(360);
+
     romaji_label = new QLabel();
-    japanese_label = new QLabel();
-    QVBoxLayout* main_layout = new QVBoxLayout(this);
-    QFont japanese_font = QFont("Ubuntu",180);
-    japanese_label->setFont(japanese_font);
-    QFont romaji_font = QFont("Ubuntu",130);
+    QFont romaji_font = font();
+    romaji_font.setPixelSize(44);
+    romaji_font.setWeight(QFont::DemiBold);
     romaji_label->setFont(romaji_font);
+    romaji_label->setAlignment(Qt::AlignCenter);
+    //keeps its height when the romaji is hidden
+    romaji_label->setMinimumHeight(QFontMetrics(romaji_font).height());
 
-    main_layout->addWidget(japanese_label);
-    main_layout->addWidget(romaji_label);
-
-    QHBoxLayout* arrows_layout = new QHBoxLayout;
+    position_label = new QLabel;
+    position_label->setProperty("role","muted");
+    position_label->setAlignment(Qt::AlignCenter);
 
     previous_button = new QPushButton;
     next_button = new QPushButton;
     hide_romaji_button = new QPushButton;
-
     pronounce_button = new QPushButton;
+    pronounce_button->setProperty("role","primary");
+    previous_button->setProperty("role","ghost");
+    next_button->setProperty("role","ghost");
+    //the arrow keys already move through the list
+    for (QPushButton *button : {previous_button,next_button,hide_romaji_button,pronounce_button})
+        button->setFocusPolicy(Qt::NoFocus);
 
+    QHBoxLayout* buttons_layout = new QHBoxLayout;
+    buttons_layout->setSpacing(8);
+    buttons_layout->addWidget(previous_button);
+    buttons_layout->addStretch();
+    buttons_layout->addWidget(pronounce_button);
+    buttons_layout->addWidget(hide_romaji_button);
+    buttons_layout->addStretch();
+    buttons_layout->addWidget(next_button);
 
-    next_button->setStyleSheet(" QPushButton {"
-                                       "     background-color: #C1E21B;"
-                                       "     border-style: outset;"
-                                       "     border-width: 2px;"
-                                       "     border-radius: 10px;"
-                                       "     border-color: beige;"
-                                       "     font: bold 14px;"
-                                       "     padding: 6px;"
-                                       " }"
-                                       " QPushButton:pressed {"
-                                       "     background-color: #AAC417;"
-                                       "     border-style: inset;"
-                                       " }");
-    previous_button->setStyleSheet(" QPushButton {"
-                                       "     background-color: #C1E21B;"
-                                       "     border-style: outset;"
-                                       "     border-width: 2px;"
-                                       "     border-radius: 10px;"
-                                       "     border-color: beige;"
-                                       "     font: bold 14px;"
-                                       "     padding: 6px;"
-                                       " }"
-                                       " QPushButton:pressed {"
-                                       "     background-color: #AAC417;"
-                                       "     border-style: inset;"
-                                       " }");
+    QVBoxLayout* main_layout = new QVBoxLayout(this);
+    main_layout->setContentsMargins(24,8,24,24);
+    main_layout->addStretch(1);
+    main_layout->addWidget(japanese_square,4);
+    main_layout->addSpacing(12);
+    main_layout->addWidget(romaji_label);
+    main_layout->addWidget(position_label);
+    main_layout->addStretch(1);
+    main_layout->addLayout(buttons_layout);
 
-    hide_romaji_button->setStyleSheet(" QPushButton {"
-                                       "     background-color: #22BBD6;"
-                                       "     border-style: outset;"
-                                       "     border-width: 2px;"
-                                       "     border-radius: 10px;"
-                                       "     border-color: beige;"
-                                       "     font: bold 14px;"
-                                       "     min-width: 10em;"
-                                       "     padding: 6px;"
-                                       " }"
-                                       " QPushButton:pressed {"
-                                       "     background-color: #2e5d7b;"
-                                       "     border-style: inset;"
-                                       " }");
-    pronounce_button->setStyleSheet(" QPushButton {"
-                                       "     background-color: #22BBD6;"
-                                       "     border-style: outset;"
-                                       "     border-width: 2px;"
-                                       "     border-radius: 10px;"
-                                       "     border-color: beige;"
-                                       "     font: bold 14px;"
-                                       "     min-width: 10em;"
-                                       "     padding: 6px;"
-                                       " }"
-                                       " QPushButton:pressed {"
-                                       "     background-color: #2e5d7b;"
-                                       "     border-style: inset;"
-                                       " }");
-
-
-    main_layout->addWidget(pronounce_button);
-
-
-    main_layout->addWidget(hide_romaji_button);
-    arrows_layout->addWidget(previous_button);
-    arrows_layout->addWidget(next_button);
-
-    main_layout->addLayout(arrows_layout);
     // hide button connection
     QObject::connect(hide_romaji_button,SIGNAL(clicked()),this,SLOT(toggleRomaji()));
     // arrow button connections
@@ -115,8 +79,8 @@ void KanaWidget::changeEvent(QEvent* event)
 
 void KanaWidget::retranslate()
 {
-    previous_button->setText(tr("Previous"));
-    next_button->setText(tr("Next"));
+    previous_button->setText("‹  "+tr("Previous"));
+    next_button->setText(tr("Next")+"  ›");
     pronounce_button->setText(tr("Pronounce"));
     // the button text depends on the active state of the spoiler
     if (romaji_visible)
@@ -132,14 +96,13 @@ void KanaWidget::showCurrentKana()
 {
     /* retrieve the current kana in order to display it */
     Kana* selected_kana= getCurrentKana();
-    /* update the japanese label */
-    japanese_label->setText("<center>"+selected_kana->getJapanese()+"</center>");
-    /* update the romaji label */
-    if(romaji_visible)
-        romaji_label->setText("<center>"+selected_kana->getRomaji()+"</center>");
-    else
-        romaji_label->setText("");
-
+    japanese_square->setText(selected_kana->getJapanese());
+    /* the romaji keeps its place when hidden */
+    romaji_label->setText(romaji_visible ? selected_kana->getRomaji() : "");
+    int index = kana_list->getSelectedIndex();
+    position_label->setText(QString("%1 / %2").arg(index+1).arg(kana_list->count()));
+    previous_button->setEnabled(index>0);
+    next_button->setEnabled(index<kana_list->count()-1);
 }
 
 // enables/disables the spoiler on each call

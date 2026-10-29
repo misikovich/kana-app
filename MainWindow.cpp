@@ -106,6 +106,24 @@ void MainWindow::createMenu()
         language_group->addAction(action);
     }
     QObject::connect(language_group,SIGNAL(triggered(QAction*)),this,SLOT(changeLanguage(QAction*)));
+
+    //theme menu: follow the system, light or dark
+    theme_menu = menuBar()->addMenu("");
+    theme_group = new QActionGroup(this);
+    for (const QString &code : availableThemes())
+    {
+        QAction *action = theme_menu->addAction("");
+        action->setData(code);
+        action->setCheckable(true);
+        action->setChecked(code==currentTheme());
+        theme_group->addAction(action);
+    }
+    QObject::connect(theme_group,SIGNAL(triggered(QAction*)),this,SLOT(changeTheme(QAction*)));
+}
+
+void MainWindow::changeTheme(QAction* action)
+{
+    applyTheme(action->data().toString());
 }
 
 void MainWindow::changeLanguage(QAction* action)
@@ -127,11 +145,16 @@ void MainWindow::retranslate()
     language_menu->setTitle(tr("Language"));
     kanaToolBar->setWindowTitle(tr("Kana choice"));
     practiceToolBar->setWindowTitle(tr("Back to menu"));
-    kana_choice_label->setText("<i>"+tr("Kana choice")+"</i>");
-    kana_combo_box->setItemText(0,tr("Hiragana"));
-    kana_combo_box->setItemText(1,tr("Katakana"));
-    kana_back_button->setText(tr("Back"));
-    practice_back_button->setText(tr("Back"));
+    theme_menu->setTitle(tr("Theme"));
+    for (QAction *action : theme_group->actions())
+    {
+        QString code = action->data().toString();
+        action->setText(code=="light" ? tr("Light") : code=="dark" ? tr("Dark") : tr("System"));
+    }
+    script_group->button(0)->setText("あ  "+tr("Hiragana"));
+    script_group->button(1)->setText("ア  "+tr("Katakana"));
+    kana_back_button->setText("‹  "+tr("Back"));
+    practice_back_button->setText("‹  "+tr("Back"));
 }
 
 /* function handling keyboard events */
@@ -145,11 +168,11 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
             kana_widget->moveToRight();
         else if (event->key() == Qt::Key_Up)
         {
-            kana_combo_box->setCurrentIndex(0);
+            setScript(0);
         }
         else if (event->key() == Qt::Key_Down)
         {
-            kana_combo_box->setCurrentIndex(1);
+            setScript(1);
         }
 
         else if (event->key() == Qt::Key_Space)
@@ -163,6 +186,22 @@ void MainWindow::showAboutDialog()
     QMessageBox::information(this,tr("About"),"Adonis Najimi \n DUT INFORMATIQUE \n NANCY CHARLEMAGNE");
 }
 
+void MainWindow::setScript(int script)
+{
+    script_group->button(script)->setChecked(true);
+    kana_widget->setScript(script);
+}
+
+//a back button, alone on the left of a toolbar
+static QPushButton* createBackButton(QToolBar *toolbar)
+{
+    QPushButton *button = new QPushButton;
+    button->setProperty("role","ghost");
+    button->setFocusPolicy(Qt::NoFocus);
+    toolbar->addWidget(button);
+    return button;
+}
+
 void MainWindow::createKanaToolBar()
 {
     kanaToolBar = addToolBar("");
@@ -173,27 +212,26 @@ void MainWindow::createKanaToolBar()
     //this line prevents the bar from being removed
     kanaToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
 
-    kana_combo_box = new QComboBox();
-    //index 0: hiragana, index 1: katakana (the texts are translated in retranslate() )
-    kana_combo_box->addItem("");
-    kana_combo_box->addItem("");
-
-
-    // toolbar layout
-    kana_back_button = new QPushButton;
-    kana_back_button->setIcon(QIcon(":/images/ressources/images/retour.png"));
-
-    kanaToolBar->addWidget(kana_back_button);
+    kana_back_button = createBackButton(kanaToolBar);
     QObject::connect(kana_back_button,SIGNAL(clicked()),this,SLOT(showMainMenu()));
-    kana_choice_label = new QLabel;
-    kanaToolBar->addWidget(kana_choice_label);
-    kanaToolBar->addWidget(kana_combo_box);
 
-    //connection of the list with the widget handling the kanas
-    QObject::connect(kana_combo_box,SIGNAL(currentIndexChanged(int)),kana_widget,SLOT(setScript(int)));
+    //hiragana / katakana, as two toggle buttons on the right
+    QWidget *spacer = new QWidget;
+    spacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
+    kanaToolBar->addWidget(spacer);
+    script_group = new QButtonGroup(this);
+    for (int i=0;i<2;i++)
+    {
+        QPushButton *button = new QPushButton;
+        button->setCheckable(true);
+        button->setFocusPolicy(Qt::NoFocus);
+        script_group->addButton(button,i);
+        kanaToolBar->addWidget(button);
+    }
+    script_group->button(0)->setChecked(true);
 
-
-
+    //connection of the choice with the widget handling the kanas
+    QObject::connect(script_group,SIGNAL(idClicked(int)),kana_widget,SLOT(setScript(int)));
 }
 void MainWindow::createPracticeToolBar()
 {
@@ -205,14 +243,6 @@ void MainWindow::createPracticeToolBar()
     //this line prevents the bar from being removed
     practiceToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
 
-    practice_back_button = new QPushButton;
-      practice_back_button->setIcon(QIcon(":/images/ressources/images/retour.png"));
-      QWidget *bg = new QWidget;
-      QVBoxLayout *bg_layout = new QVBoxLayout;
-      bg_layout->addWidget(practice_back_button,0,Qt::AlignCenter | Qt::AlignHCenter);
-      bg->setLayout(bg_layout);
-      practiceToolBar->addWidget(bg);
-
-      QObject::connect(practice_back_button,SIGNAL(clicked()),this,SLOT(showMainMenu()));
+    practice_back_button = createBackButton(practiceToolBar);
+    QObject::connect(practice_back_button,SIGNAL(clicked()),this,SLOT(showMainMenu()));
 }
-

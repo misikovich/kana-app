@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/fonts">
+        <file>ressources/fonts/Onest-Regular.ttf</file>
+        <file>ressources/fonts/Onest-SemiBold.ttf</file>
+        <file>ressources/fonts/KleeOne-SemiBold-kana.ttf</file>
+    </qresource>
+</RCC>

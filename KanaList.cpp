@@ -76,6 +76,16 @@ Kana* KanaList::getSelected(bool hiragana)
  * or left (true)
  */
 
+int KanaList::getSelectedIndex()
+{
+    return selected;
+}
+
+int KanaList::count()
+{
+    return hiragana_list.size();
+}
+
 bool KanaList::moveSelection(bool to_left)
 {
 
