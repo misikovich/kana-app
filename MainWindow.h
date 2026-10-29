@@ -8,13 +8,13 @@
 #include <QMessageBox>
 #include <QToolBar>
 #include "MainMenuWidget.h"
-#include "QuizWidget.h"
+#include "PracticeWidget.h"
 #include <QPixmap>
 #include "FaderWidget.h"
 #include <QWidgetItem>
 #include <QListWidget>
 #include <QListWidgetItem>
-#include "QuizEndWidget.h"
+#include "PracticeEndWidget.h"
 #include "ScoreStorage.h"
 #include "Language.h"
 class MainWindow : public QMainWindow
@@ -24,7 +24,7 @@ public:
     MainWindow();
     void createMenu();
     void createKanaToolBar();
-    void createQuizToolBar();
+    void createPracticeToolBar();
     void keyPressEvent(QKeyEvent* event);
     //updates the texts when the language changes
     void changeEvent(QEvent* event);
@@ -32,11 +32,11 @@ public:
 public slots:
     void showAboutDialog();
     void showLearning();
-    void showQuiz();
+    void showPractice();
     void showMainMenu();
     //enables the animation:
     void fadeInWidget(int index);
-    void showQuizEnd();
+    void showPracticeEnd();
     void changeLanguage(QAction* action);
 
 
@@ -44,11 +44,11 @@ public slots:
 
 private:
     QToolBar *kanaToolBar;
-    QToolBar *quizToolBar;
+    QToolBar *practiceToolBar;
 
     KanaWidget *kana_widget;
-    QuizWidget *quiz_widget;
-    QuizEndWidget *quiz_end_widget;
+    PracticeWidget *practice_widget;
+    PracticeEndWidget *practice_end_widget;
     QComboBox *kana_combo_box;
     QStackedWidget *stacked_widgets;
     //texts to retranslate
@@ -57,7 +57,7 @@ private:
     QMenu *language_menu;
     QLabel *kana_choice_label;
     QPushButton *kana_back_button;
-    QPushButton *quiz_back_button;
+    QPushButton *practice_back_button;
     //enables the animation:
     QPointer<FaderWidget> faderWidget;
 

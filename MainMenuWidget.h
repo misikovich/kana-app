@@ -12,7 +12,7 @@ class MainMenuWidget : public QWidget
 public:
     MainMenuWidget();
     QPushButton* getButtonLearn();
-    QPushButton* getButtonQuiz();
+    QPushButton* getButtonPractice();
     void createIcons();
     void changeEvent(QEvent* event);
     void retranslate();
@@ -20,7 +20,7 @@ public:
 signals:
 
 private:
-    QPushButton* quiz_button;
+    QPushButton* practice_button;
     QPushButton* learn_button;
 };
 

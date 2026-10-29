@@ -1,16 +1,16 @@
-#ifndef QUIZENDWIDGET_H
-#define QUIZENDWIDGET_H
+#ifndef PRACTICEENDWIDGET_H
+#define PRACTICEENDWIDGET_H
 #include <QLabel>
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QEvent>
-class QuizEndWidget : public QWidget
+class PracticeEndWidget : public QWidget
 {
     Q_OBJECT
 public:
-    QuizEndWidget();
-    QuizEndWidget(int);
+    PracticeEndWidget();
+    PracticeEndWidget(int);
     void setScore(int);
     void changeEvent(QEvent* event);
     void retranslate();
@@ -22,4 +22,4 @@ private:
     QLabel *end_label;
 };
 
-#endif // QUIZENDWIDGET_H
+#endif // PRACTICEENDWIDGET_H

@@ -13,7 +13,8 @@ public:
     Kana* getSelected();
     bool moveSelection(bool);
     Kana* getSelected(bool hiragana);
-    Kana* getShuffledKana();
+    //random kana among the chosen scripts ( at least one must be true )
+    Kana* getShuffledKana(bool hiragana=true, bool katakana=true);
 
 private:
     QVector<Kana*> hiragana_list,katakana_list;

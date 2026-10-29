@@ -1,7 +1,7 @@
 kana-app
 ========
 
-Kanapp is a small desktop app for learning the Japanese kana (hiragana and katakana). You can browse the kana and hear how each one is pronounced, or test yourself with a timed quiz.
+Kanapp is a small desktop app for learning the Japanese kana (hiragana and katakana). You can browse the kana and hear how each one is pronounced, or test yourself in practice mode.
 
 This is a **fork** of [kana-app/kana-app](https://github.com/kana-app/kana-app), the C++/Qt app Adonis Najimi wrote as a summer project to learn C++. This fork keeps the app as it was and makes it build and run again on current systems:
 
@@ -18,15 +18,15 @@ This is a **fork** of [kana-app/kana-app](https://github.com/kana-app/kana-app),
 
 ## Screenshots
 
-| Main menu | Learn | Quiz |
+| Main menu | Learn | Practice |
 |:---:|:---:|:---:|
-| ![Main menu](screenshots/menu.png) | ![Browsing the kana](screenshots/learn.png) | ![Timed quiz](screenshots/quiz.png) |
+| ![Main menu](screenshots/menu.png) | ![Browsing the kana](screenshots/learn.png) | ![Practice with 4 kana](screenshots/practice.png) |
 
 ## How to use
 
 **Learn:** step through the kana with *Previous* / *Next* or the Left / Right arrow keys. Switch between Hiragana and Katakana in the toolbar or with Up / Down. *Pronounce* plays the sound, and *Hide romaji* (or Space) hides the romaji so you can test yourself.
 
-**Quiz:** press *Start* and pick how many seconds you get per kana (10, 20 or 30). Type the romaji for the kana shown. Your input turns green while it's on track and red when it isn't. Answering quickly and getting several right in a row earns more points. The game ends after more than 5 missed kana, and your best score is saved.
+**Practice:** choose the kana to practice (hiragana, katakana or both), the time per kana (10, 20 or 30 seconds, or unlimited) and how many kana are shown at once (1, 2 or 4), then press *Start*. Click a kana (or press 1–4) and type its romaji. Your input turns green while it's on track and red when it isn't. Answering quickly and getting several right in a row earns more points. A kana that runs out of time is a mistake, and the right answer is shown. With unlimited time, a complete wrong answer is a mistake, and a *Skip* button (or Esc) fades in after 10 seconds on the same kana. The game ends after more than 5 mistakes. Your settings are remembered, and the best score is saved separately for timed and unlimited games.
 
 The interface is available in English, French and Russian: pick one from the *Language* menu. On first launch the app follows the system language.
 

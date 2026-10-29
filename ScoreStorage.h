@@ -10,7 +10,8 @@
 #include <QStandardPaths>
 
 //returns the path of the file containing the best score
-QString scoreFilePath();
+//unlimited time has its own best score
+QString scoreFilePath(bool unlimited=false);
 
 //returns the score located in the file passed as parameter
 int loadScore(QString);

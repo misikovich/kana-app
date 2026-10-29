@@ -4,28 +4,28 @@ MainWindow::MainWindow()
 {
     kana_widget = new KanaWidget();
     setCentralWidget(kana_widget);
-    quiz_widget= new QuizWidget();
+    practice_widget= new PracticeWidget();
     MainMenuWidget *main_menu_widget= new MainMenuWidget();
 
     QObject::connect(main_menu_widget->getButtonLearn(),SIGNAL(clicked()),this,SLOT(showLearning()));
-    QObject::connect(main_menu_widget->getButtonQuiz(),SIGNAL(clicked()),this,SLOT(showQuiz()));
+    QObject::connect(main_menu_widget->getButtonPractice(),SIGNAL(clicked()),this,SLOT(showPractice()));
 
 
     setWindowTitle("Kana Learning");
-    quiz_end_widget = new QuizEndWidget;
+    practice_end_widget = new PracticeEndWidget;
     stacked_widgets = new QStackedWidget;
     stacked_widgets->addWidget(main_menu_widget);
     stacked_widgets->addWidget(kana_widget);
-    stacked_widgets->addWidget(quiz_widget);
-    stacked_widgets->addWidget(quiz_end_widget);
+    stacked_widgets->addWidget(practice_widget);
+    stacked_widgets->addWidget(practice_end_widget);
     setCentralWidget(stacked_widgets);
     QObject::connect(stacked_widgets, SIGNAL(currentChanged(int)), this, SLOT(fadeInWidget(int)));
 
-    QObject::connect(quiz_widget, SIGNAL(gameOver()), this, SLOT(showQuizEnd()));
+    QObject::connect(practice_widget, SIGNAL(gameOver()), this, SLOT(showPracticeEnd()));
 
     createMenu();
     createKanaToolBar();
-    createQuizToolBar();
+    createPracticeToolBar();
     retranslate();
 
 }
@@ -46,34 +46,29 @@ void MainWindow::fadeInWidget(int index)
     faderWidget->start();
 }
 
-void MainWindow::showQuiz()
+void MainWindow::showPractice()
 {
     stacked_widgets->setCurrentIndex(2);
-    QuizWidget *quiz = (QuizWidget*)stacked_widgets->widget(2);
-    // load the score
-    quiz->reset(loadScore(scoreFilePath()));
-    quizToolBar->setVisible(true);
+    practice_widget->reset();
+    practiceToolBar->setVisible(true);
 }
 
 void MainWindow::showMainMenu()
 {
-    //stops the current quiz so that the timer does not end the game in the background
-    quiz_widget->stopGame();
+    //stops the current game so that the timer does not end the game in the background
+    practice_widget->stopGame();
     stacked_widgets->setCurrentIndex(0);
     kanaToolBar->setVisible(false);
-    quizToolBar->setVisible(false);
+    practiceToolBar->setVisible(false);
     //takes back the keyboard focus and avoids conflicts between the different widgets
     setFocus();
 }
 
-void MainWindow::showQuizEnd()
+void MainWindow::showPracticeEnd()
 {
-    //display of the score
-    quiz_end_widget->setScore(quiz_widget->getScore());
+    //display of the score ( PracticeWidget saves the best score )
+    practice_end_widget->setScore(practice_widget->getScore());
     stacked_widgets->setCurrentIndex(3);
-
-    //saving of the score
-    saveBestScore(scoreFilePath(),quiz_widget->getScore());
 }
 
 
@@ -117,12 +112,12 @@ void MainWindow::retranslate()
     note_action->setText(tr("Notes"));
     language_menu->setTitle(tr("Language"));
     kanaToolBar->setWindowTitle(tr("Kana choice"));
-    quizToolBar->setWindowTitle(tr("Back to menu"));
+    practiceToolBar->setWindowTitle(tr("Back to menu"));
     kana_choice_label->setText("<i>"+tr("Kana choice")+"</i>");
     kana_combo_box->setItemText(0,tr("Hiragana"));
     kana_combo_box->setItemText(1,tr("Katakana"));
     kana_back_button->setText(tr("Back"));
-    quiz_back_button->setText(tr("Back"));
+    practice_back_button->setText(tr("Back"));
 }
 
 /* function handling keyboard events */
@@ -186,24 +181,24 @@ void MainWindow::createKanaToolBar()
 
 
 }
-void MainWindow::createQuizToolBar()
+void MainWindow::createPracticeToolBar()
 {
-    quizToolBar = addToolBar("");
-    quizToolBar->setMovable(false);
-    quizToolBar->setFloatable(false);
-    quizToolBar->setVisible(false);
+    practiceToolBar = addToolBar("");
+    practiceToolBar->setMovable(false);
+    practiceToolBar->setFloatable(false);
+    practiceToolBar->setVisible(false);
 
     //this line prevents the bar from being removed
-    quizToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
+    practiceToolBar->setContextMenuPolicy(Qt::PreventContextMenu);
 
-    quiz_back_button = new QPushButton;
-      quiz_back_button->setIcon(QIcon(":/images/ressources/images/retour.png"));
+    practice_back_button = new QPushButton;
+      practice_back_button->setIcon(QIcon(":/images/ressources/images/retour.png"));
       QWidget *bg = new QWidget;
       QVBoxLayout *bg_layout = new QVBoxLayout;
-      bg_layout->addWidget(quiz_back_button,0,Qt::AlignCenter | Qt::AlignHCenter);
+      bg_layout->addWidget(practice_back_button,0,Qt::AlignCenter | Qt::AlignHCenter);
       bg->setLayout(bg_layout);
-      quizToolBar->addWidget(bg);
+      practiceToolBar->addWidget(bg);
 
-      QObject::connect(quiz_back_button,SIGNAL(clicked()),this,SLOT(showMainMenu()));
+      QObject::connect(practice_back_button,SIGNAL(clicked()),this,SLOT(showMainMenu()));
 }
 

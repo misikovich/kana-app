@@ -91,10 +91,10 @@ bool KanaList::moveSelection(bool to_left)
 }
 
 
-Kana* KanaList::getShuffledKana()
+Kana* KanaList::getShuffledKana(bool hiragana, bool katakana)
 {
     int random_index = QRandomGenerator::global()->bounded(HIRAGANA_SIZE);
-    bool is_katakana = QRandomGenerator::global()->bounded(2);
+    bool is_katakana = !hiragana || (katakana && QRandomGenerator::global()->bounded(2));
     if (!is_katakana)
         return hiragana_list[random_index];
     else

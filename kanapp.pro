@@ -11,10 +11,10 @@ SOURCES += \
     KanaWidget.cpp \
     MainWindow.cpp \
     MainMenuWidget.cpp \
-    QuizWidget.cpp \
+    PracticeWidget.cpp \
     FaderWidget.cpp \
-    CountdownWidget.cpp \
-    QuizEndWidget.cpp \
+    KanaCard.cpp \
+    PracticeEndWidget.cpp \
     ScoreStorage.cpp \
     Language.cpp
 
@@ -24,10 +24,10 @@ HEADERS += \
     KanaWidget.h \
     MainWindow.h \
     MainMenuWidget.h \
-    QuizWidget.h \
+    PracticeWidget.h \
     FaderWidget.h \
-    CountdownWidget.h \
-    QuizEndWidget.h \
+    KanaCard.h \
+    PracticeEndWidget.h \
     ScoreStorage.h \
     Language.h
 

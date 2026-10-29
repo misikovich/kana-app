@@ -2,11 +2,11 @@
 
 //path of the score file, in the user data directory
 //( the executable's directory is not always writable, e.g. Program Files )
-QString scoreFilePath()
+QString scoreFilePath(bool unlimited)
 {
     QString directory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir().mkpath(directory);
-    return directory+"/score_data";
+    return directory+(unlimited ? "/score_data_unlimited" : "/score_data");
 }
 
 //takes the path to the file and the score as parameters

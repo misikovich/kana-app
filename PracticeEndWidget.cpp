@@ -1,6 +1,6 @@
-#include "QuizEndWidget.h"
+#include "PracticeEndWidget.h"
 
-QuizEndWidget::QuizEndWidget()
+PracticeEndWidget::PracticeEndWidget()
 {
     score =0;
     end_label = new QLabel;
@@ -16,7 +16,7 @@ QuizEndWidget::QuizEndWidget()
 
 }
 
-QuizEndWidget::QuizEndWidget(int s)
+PracticeEndWidget::PracticeEndWidget(int s)
 {
     score=s;
     end_label = new QLabel;
@@ -29,20 +29,20 @@ QuizEndWidget::QuizEndWidget(int s)
     retranslate();
 }
 
-void QuizEndWidget::setScore(int s)
+void PracticeEndWidget::setScore(int s)
 {
     score=s;
     retranslate();
 }
 
-void QuizEndWidget::changeEvent(QEvent* event)
+void PracticeEndWidget::changeEvent(QEvent* event)
 {
     if (event->type()==QEvent::LanguageChange)
         retranslate();
     QWidget::changeEvent(event);
 }
 
-void QuizEndWidget::retranslate()
+void PracticeEndWidget::retranslate()
 {
     end_label->setText("<center>"+tr("THE END!")+"</center>");
     score_label->setText("<center>"+tr("Your score: %1").arg(score)+"</center>");

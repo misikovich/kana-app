@@ -23,10 +23,10 @@ qt_add_executable(kanapp WIN32 MACOSX_BUNDLE
     KanaWidget.cpp KanaWidget.h
     MainWindow.cpp MainWindow.h
     MainMenuWidget.cpp MainMenuWidget.h
-    QuizWidget.cpp QuizWidget.h
+    PracticeWidget.cpp PracticeWidget.h
     FaderWidget.cpp FaderWidget.h
-    CountdownWidget.cpp CountdownWidget.h
-    QuizEndWidget.cpp QuizEndWidget.h
+    KanaCard.cpp KanaCard.h
+    PracticeEndWidget.cpp PracticeEndWidget.h
     ScoreStorage.cpp ScoreStorage.h
     Language.cpp Language.h
     Images.qrc

@@ -4,7 +4,7 @@ MainMenuWidget::MainMenuWidget()
 {
     QVBoxLayout *main_layout = new QVBoxLayout(this);
     learn_button  =    new QPushButton;
-    quiz_button = new QPushButton;
+    practice_button = new QPushButton;
 
     QLabel *welcome_label = new QLabel("- Kana Learning -");
     welcome_label->setFont(QFont("Ubuntu",40));
@@ -18,7 +18,7 @@ MainMenuWidget::MainMenuWidget()
     main_layout->addWidget(author_label);
     main_layout->addWidget(welcome_label);
 
-    quiz_button->setStyleSheet(" QPushButton {"
+    practice_button->setStyleSheet(" QPushButton {"
                                 "     background-color: #0c8fe2;"
                                 "     border-style: outset;"
                                 "     border-width: 2px;"
@@ -47,20 +47,20 @@ MainMenuWidget::MainMenuWidget()
                                 "     border-style: inset;"
                                 " }");
 
-    quiz_button->setMinimumSize(80,80);
+    practice_button->setMinimumSize(80,80);
     learn_button->setMinimumSize(80,80);
 
     main_layout->addWidget(learn_button);
-    main_layout->addWidget(quiz_button);
+    main_layout->addWidget(practice_button);
 
     retranslate();
 
 
 }
 
-QPushButton* MainMenuWidget::getButtonQuiz()
+QPushButton* MainMenuWidget::getButtonPractice()
 {
-    return quiz_button;
+    return practice_button;
 }
 
 QPushButton* MainMenuWidget::getButtonLearn()
@@ -79,7 +79,7 @@ void MainMenuWidget::changeEvent(QEvent* event)
 void MainMenuWidget::retranslate()
 {
     learn_button->setText(tr("Learn"));
-    quiz_button->setText(tr("Quiz"));
+    practice_button->setText(tr("Practice"));
 }
 
 void MainMenuWidget::createIcons()
