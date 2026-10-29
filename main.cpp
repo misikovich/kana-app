@@ -2,7 +2,7 @@
 #include <QPushButton>
 #include <QtWidgets>
 
-#include <FenetreKana.h>
+#include "FenetreKana.h"
 int main(int argc, char *argv[])
 {   QApplication app(argc,argv);
 

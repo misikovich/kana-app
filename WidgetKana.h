@@ -12,11 +12,7 @@
 #include <QPushButton>
 #include <QKeyEvent>
 #include <QUrl>
-#include <QMultimedia>
-#include <QMediaPlayer>
-#include <QAudioOutput>
-#include <QAudioFormat>
-#include <QSound>
+#include <QSoundEffect>
 
 /* classe permettant d'afficher la liste des kanas */
 class WidgetKana : public QWidget
@@ -44,6 +40,8 @@ private:
     Kana* getCurrentKana();
     //bouton afficher_romaji qui change quand on appuie dessus
     QPushButton* hide_romaji;
+    //lecture du son du kana
+    QSoundEffect* son;
 };
 
 #endif // WIDGETKANA_H

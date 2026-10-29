@@ -1,4 +1,4 @@
-#include "fenetrekana.h"
+#include "FenetreKana.h"
 
 FenetreKana::FenetreKana()
 {
@@ -23,6 +23,7 @@ FenetreKana::FenetreKana()
 
     QObject::connect(widget_quizz, SIGNAL(finPartie()), this, SLOT(lanceFinQuiz()));
 
+    creationMenu();
     creationToolBarKana();
     creationToolBarQuizz();
 
@@ -49,12 +50,14 @@ void FenetreKana::lanceWidgetQuizz()
     stacked_widgets->setCurrentIndex(2);
     WidgetQuizz *quizz = (WidgetQuizz*)stacked_widgets->widget(2);
     // chargement du score
-    quizz->initialisation(chargerScore(QCoreApplication::applicationDirPath()+"/score_data"));
+    quizz->initialisation(chargerScore(cheminScore()));
     toolBarQuizz->setVisible(true);
 }
 
 void FenetreKana::retourFenetrePrincipale()
 {
+    //arrête le quizz en cours pour que le timer ne termine pas la partie en arrière-plan
+    widget_quizz->stoppePartie();
     stacked_widgets->setCurrentIndex(0);
     toolBarKana->setVisible(false);
     toolBarQuizz->setVisible(false);
@@ -69,7 +72,7 @@ void FenetreKana::lanceFinQuiz()
     stacked_widgets->setCurrentIndex(3);
 
     //enregistrement du score
-    sauverMeilleurScore(QCoreApplication::applicationDirPath()+"/score_data" ,widget_quizz->getScore());
+    sauverMeilleurScore(cheminScore(),widget_quizz->getScore());
 }
 
 
@@ -78,8 +81,7 @@ void FenetreKana::creationMenu()
 {
 
     QMenu *menu_file = menuBar()->addMenu("About");
-    menu_file->addAction("Notes");
-    QAction *action_note = new QAction("Notes",this);
+    QAction *action_note = menu_file->addAction("Notes");
     QObject::connect(action_note,SIGNAL(triggered()),this,SLOT(affichePopupNote()));
 }
 
@@ -109,9 +111,6 @@ void FenetreKana::keyPressEvent(QKeyEvent* event)
 }
 
 
-
-
-//fonctionne pas
 void FenetreKana::affichePopupNote()
 {
     QMessageBox::information(this,"About","Adonis Najimi \n DUT INFORMATIQUE \n NANCY CHARLEMAGNE");
@@ -146,7 +145,7 @@ void FenetreKana::creationToolBarKana()
     toolBarKana->addWidget(liste_deroulante_kana);
 
     //liaison de la liste avec le widget gérant les kanas
-    QObject::connect(liste_deroulante_kana,SIGNAL(currentIndexChanged(QString)),widget_kana,SLOT(setKana(QString)));
+    QObject::connect(liste_deroulante_kana,SIGNAL(currentTextChanged(QString)),widget_kana,SLOT(setKana(QString)));
 
 
 

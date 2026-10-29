@@ -9,7 +9,7 @@
 #include <QToolBar>
 #include "WidgetPrincipal.h"
 #include "WidgetQuizz.h"
-#include <QPixMap>
+#include <QPixmap>
 #include "FaderWidget.h"
 #include <QWidgetItem>
 #include <QListWidget>

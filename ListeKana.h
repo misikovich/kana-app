@@ -5,8 +5,7 @@
 #define HIRAGANA_SIZE 46
 #define KATAKANA_SIZE 46
 
-#include <cstdlib>
-#include <ctime>
+#include <QRandomGenerator>
 class ListeKana
 {
 public:

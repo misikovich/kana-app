@@ -7,6 +7,10 @@ WidgetQuizz::WidgetQuizz()
     liste_kana = new ListeKana;
     score=0;
     nb_fautes=0;
+    niveau=1;
+    affilee=false;
+    bonus=false;
+    choix_niveau_widget=nullptr;
     QFont police_jap = QFont("Ubuntu",180);
     QFont police_romaji = QFont("Ubuntu",120);
     kana_cherche=new QLabel();
@@ -47,6 +51,7 @@ WidgetQuizz::WidgetQuizz()
     //gestion du décompte
     compteur = new TimeCompteur(10,1000);
     layout->addWidget(compteur);
+    QObject::connect(compteur,SIGNAL(finCompteur()),this,SLOT(lanceQuestion()));
 
     //apparition une fois le niveau choisi
     compteur->setVisible(false);
@@ -67,8 +72,17 @@ void WidgetQuizz::initialisation(int meilleur_score)
     compteur->setVisible(false);
     kana_cherche->setPixmap(QPixmap(":/images/ressources/images/kana_quizz.png"));
     reponse_input->setVisible(false);
+    score=0;
     nb_fautes=0;
+    affilee=false;
+    bonus=false;
 
+}
+
+//arrête la partie en cours ( retour au menu principal )
+void WidgetQuizz::stoppePartie()
+{
+    compteur->stoppeCompteur();
 }
 
 
@@ -78,9 +92,6 @@ void WidgetQuizz::creationCompteur(int debut)
     compteur->setBegin(debut);
     compteur->setVisible(true);
     reponse_input->setVisible(true);
-
-    QObject::connect(compteur,SIGNAL(finCompteur()),this,SLOT(lanceQuestion()));
-
 }
 
 //affiche la réponse quand correcte ou timer dépassé
@@ -102,16 +113,18 @@ void WidgetQuizz::lanceQuestion()
 
     //on augmente le nombre de fautes quand le timer est arrivé à sa fin
     nb_fautes++;
-
-    //compte le nombre de nouvelles questions et stop quand on dépasse
-    nouvelleQuestion();
+    //la série de bonnes réponses est cassée
+    affilee=false;
 
     // si le nombre de fautes est >5 on stoppe tout
     if (nb_fautes>5)
     {
-        emit finPartie();
         compteur->stoppeCompteur();
+        emit finPartie();
+        return;
     }
+
+    nouvelleQuestion();
 }
 
 void WidgetQuizz::updateScore()
@@ -131,7 +144,15 @@ void WidgetQuizz::updateScore()
 // affiche des niveaux
 void WidgetQuizz::choixNiveau()
 {
+    //le menu des niveaux n'est créé qu'une seule fois
+    if (choix_niveau_widget)
+    {
+        stacked_widgets->setCurrentWidget(choix_niveau_widget);
+        return;
+    }
+
     QWidget *choix_niveau  = new QWidget;
+    choix_niveau_widget = choix_niveau;
     QVBoxLayout *layout = new QVBoxLayout(choix_niveau);
     QPushButton *bouton1 = new QPushButton("10 secondes");
     QPushButton *bouton2 = new QPushButton("20 secondes");
@@ -191,13 +212,13 @@ void WidgetQuizz::niveau3()
 //fonction d'affilée ou non avec boolean ou juste le compteur!
 int WidgetQuizz::calculScore(int score)
 {
-
-    score += ((compteur->getDerniereValeur()%10))+(niveau);
+    int gain = ((compteur->getDerniereValeur()%10))+(niveau);
+    //le bonus double les points de la question, pas le score total
     if (bonus)
     {
-        score*=2;
+        gain*=2;
     }
-    return score;
+    return score+gain;
 }
 
 // on passe à la question suivante ( le kana suivant ) + initialisation du timer
@@ -235,14 +256,11 @@ void WidgetQuizz::gereReponse(QString reponse)
 
     if (verifieReponse(reponse))
     {
-       nouvelleQuestion();
-
-       //augmentation du score et gestion du booléen affilée
+       //gestion du booléen affilée puis augmentation du score,
+       //avant que nouvelleQuestion() ne réinitialise le compteur
+       bonus=affilee;
        score=calculScore(score);
-       if (affilee)
-           bonus=true;
-       else
-           bonus=false;
+       nouvelleQuestion();
        //mise à jour du score après le calcul
        updateScore();
 
@@ -250,8 +268,6 @@ void WidgetQuizz::gereReponse(QString reponse)
        stacked_widgets->setCurrentWidget(reponse_ok);
        affilee=true;
     }
-    else
-        affilee=false;
 
 }
 

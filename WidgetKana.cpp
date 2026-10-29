@@ -6,6 +6,7 @@ WidgetKana::WidgetKana()
     hiragana=true;
     spoil_actif=true;
     liste_kana = new ListeKana();
+    son = new QSoundEffect(this);
     caractere_romaji = new QLabel();
     caractere_jap = new QLabel();
     QVBoxLayout* layout_base = new QVBoxLayout(this);
@@ -169,5 +170,6 @@ void::WidgetKana::setKana(QString choix)
 // prononce le kana actuel
 void WidgetKana::pronounce()
 {
-    QSound::play(":/sons/ressources/sons/"+getCurrentKana()->getRomaji()+".wav");
+    son->setSource(QUrl("qrc:/sons/ressources/sons/"+getCurrentKana()->getRomaji()+".wav"));
+    son->play();
 }

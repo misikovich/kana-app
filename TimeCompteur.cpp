@@ -60,6 +60,7 @@ void TimeCompteur::initialiseCompteur()
 {
     QLabel *label = (QLabel*)(stacked_widget->widget(0));
     label->setText(QString::number(m_debut));
+    derniere_valeur=m_debut;
 }
 
 void TimeCompteur::lanceCompteur(int time)

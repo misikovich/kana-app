@@ -1,5 +1,4 @@
 CONFIG += qt
-CONFIG += console
 QT += widgets
 QT += multimedia
 

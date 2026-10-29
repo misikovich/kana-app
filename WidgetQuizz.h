@@ -36,6 +36,7 @@ public:
     void afficheReponse();
     void initialisation(int); // en paramètre le meilleur score
     int getScore();
+    void stoppePartie();
 public slots:
     void gereReponse(QString);
     void fadeInWidget(int index);
@@ -56,6 +57,8 @@ private:
     int score;
     int niveau; // permet d'augmenter le score plus facilement
     QStackedWidget *choix_niveau;
+    //menu des niveaux, créé au premier clic sur "Commencer"
+    QWidget *choix_niveau_widget;
     QLabel *kana_cherche;
     QLabel *reponse_instantanee;
     QLabel *score_label;

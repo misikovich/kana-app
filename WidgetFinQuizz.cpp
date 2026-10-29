@@ -17,7 +17,7 @@ WidgetFinQuizz::WidgetFinQuizz()
 
 WidgetFinQuizz::WidgetFinQuizz(int score)
 {
-    QLabel *fin = new QLabel("<centerFIN!</center>");
+    QLabel *fin = new QLabel("<center>FIN!</center>");
     score_label = new QLabel("<center>Votre Score :"+QString::number(score)+"</center>");
 
     QHBoxLayout *layout = new QHBoxLayout;

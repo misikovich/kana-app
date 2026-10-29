@@ -93,12 +93,9 @@ bool ListeKana::deplaceSelection(bool gauche)
 
 Kana* ListeKana::getShuffledKana()
 {
-    //initialisation de rand
-    srand(time(NULL));
-
-    int hasard = rand() % HIRAGANA_SIZE;
-    int katakana = rand() % 200;
-    if ((katakana % 2) == 0)
+    int hasard = QRandomGenerator::global()->bounded(HIRAGANA_SIZE);
+    bool katakana = QRandomGenerator::global()->bounded(2);
+    if (!katakana)
         return liste_hiragana[hasard];
     else
         return liste_katakana[hasard];

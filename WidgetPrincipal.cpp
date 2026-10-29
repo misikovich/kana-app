@@ -10,10 +10,12 @@ WidgetPrincipal::WidgetPrincipal()
     bienvenue->setFont(QFont("Ubuntu",40));
     bienvenue->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
 
-    QLabel *nom_auteur = new QLabel("Najimi's App",bienvenue);
-
+    QLabel *nom_auteur = new QLabel("Najimi's + Misikovich's + Vadim's + Claude's App");
+    nom_auteur->setFont(QFont("Ubuntu",16));
+    nom_auteur->setWordWrap(true);
     nom_auteur->setAlignment(Qt::AlignLeft);
 
+    layout_base->addWidget(nom_auteur);
     layout_base->addWidget(bienvenue);
 
     button_quizz->setStyleSheet(" QPushButton {"
