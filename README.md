@@ -1,7 +1,7 @@
 kana-app
 ========
 
-Kanapp is a small desktop app for learning the Japanese kana (hiragana and katakana). You can browse the kana and hear how each one is pronounced, or test yourself in practice mode.
+Kanapp is a small desktop app for learning the Japanese kana (hiragana and katakana). You can browse the kana and hear how each one is pronounced, or test yourself in practice mode or with a multiple-choice quiz.
 
 This is a **fork** of [kana-app/kana-app](https://github.com/kana-app/kana-app), the C++/Qt app Adonis Najimi wrote as a summer project to learn C++. This fork keeps the app as it was and makes it build and run again on current systems:
 
@@ -27,6 +27,8 @@ This is a **fork** of [kana-app/kana-app](https://github.com/kana-app/kana-app),
 **Learn:** step through the kana with *Previous* / *Next* or the Left / Right arrow keys. Switch between Hiragana and Katakana in the toolbar or with Up / Down. *Pronounce* plays the sound, and *Hide romaji* (or Space) hides the romaji so you can test yourself.
 
 **Practice:** choose the kana to practice (hiragana, katakana or both), the time per kana (10, 20 or 30 seconds, or unlimited) and how many kana are shown at once (1, 2 or 4), then press *Start*. Click a kana (or press 1–4) and type its romaji. Your input turns green while it's on track and red when it isn't. Answering quickly and getting several right in a row earns more points. A kana that runs out of time is a mistake, and the right answer is shown. With unlimited time, a complete wrong answer is a mistake, and a *Skip* button (or Esc) fades in after 10 seconds on the same kana. The game ends after more than 5 mistakes. Your settings are remembered, and the best score is saved separately for timed and unlimited games.
+
+**Quiz:** the same kana and time choices as practice. One kana is shown with 4 possible romaji: click the right one or press 1–4. A wrong answer or running out of time is a mistake, and the game ends after more than 5 mistakes. The quiz keeps its own best scores.
 
 The interface is available in English, French and Russian: pick one from the *Language* menu. On first launch the app follows the system language.
 

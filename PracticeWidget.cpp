@@ -1,8 +1,10 @@
 #include "PracticeWidget.h"
 
-//practice display: a settings page, then the game page
-PracticeWidget::PracticeWidget()
+//practice and quiz display: a settings page, then the game page
+PracticeWidget::PracticeWidget(bool quiz)
 {
+    quiz_mode=quiz;
+    settings_prefix = quiz ? "quiz/" : "practice/";
     kana_list = new KanaList;
     selected_card=nullptr;
     score=0;
@@ -30,8 +32,8 @@ QWidget* PracticeWidget::createSettingsPage()
     //kana choice: at least one of the two stays checked
     hiragana_check = new QCheckBox;
     katakana_check = new QCheckBox;
-    hiragana_check->setChecked(settings.value("practice/hiragana",true).toBool());
-    katakana_check->setChecked(settings.value("practice/katakana",true).toBool());
+    hiragana_check->setChecked(settings.value(settings_prefix+"hiragana",true).toBool());
+    katakana_check->setChecked(settings.value(settings_prefix+"katakana",true).toBool());
     if (!hiragana_check->isChecked() && !katakana_check->isChecked())
         hiragana_check->setChecked(true);
     QObject::connect(hiragana_check,SIGNAL(toggled(bool)),this,SLOT(keepOneKanaChecked()));
@@ -53,7 +55,7 @@ QWidget* PracticeWidget::createSettingsPage()
         time_row->addWidget(button);
     }
     time_row->addStretch();
-    QAbstractButton *saved_time = time_group->button(settings.value("practice/time",10).toInt());
+    QAbstractButton *saved_time = time_group->button(settings.value(settings_prefix+"time",10).toInt());
     (saved_time ? saved_time : time_group->button(10))->setChecked(true);
     QObject::connect(time_group,SIGNAL(idClicked(int)),this,SLOT(updateBestScore()));
 
@@ -69,7 +71,7 @@ QWidget* PracticeWidget::createSettingsPage()
         count_row->addWidget(button);
     }
     count_row->addStretch();
-    QAbstractButton *saved_count = count_group->button(settings.value("practice/cards",1).toInt());
+    QAbstractButton *saved_count = count_group->button(settings.value(settings_prefix+"cards",1).toInt());
     (saved_count ? saved_count : count_group->button(1))->setChecked(true);
 
     kana_title = new QLabel;
@@ -79,6 +81,8 @@ QWidget* PracticeWidget::createSettingsPage()
     form->addRow(kana_title,kana_row);
     form->addRow(time_title,time_row);
     form->addRow(count_title,count_row);
+    //the quiz always shows a single kana
+    form->setRowVisible(count_title,!quiz_mode);
 
     best_label = new QLabel;
     start_button = new QPushButton;
@@ -154,10 +158,37 @@ QWidget* PracticeWidget::createGamePage()
     skip_timer->setSingleShot(true);
     QObject::connect(skip_timer,SIGNAL(timeout()),this,SLOT(showSkipButton()));
 
-    QHBoxLayout *input_row = new QHBoxLayout;
+    QWidget *input_panel = new QWidget;
+    QHBoxLayout *input_row = new QHBoxLayout(input_panel);
+    input_row->setContentsMargins(0,0,0,0);
     input_row->addWidget(answer_input,1);
     input_row->addWidget(skip_button);
-    layout->addLayout(input_row);
+    layout->addWidget(input_panel);
+
+    //quiz: 4 answer buttons, also on the keys 1-4
+    QWidget *choices_panel = new QWidget;
+    QHBoxLayout *choices_row = new QHBoxLayout(choices_panel);
+    choices_row->setContentsMargins(0,0,0,0);
+    choice_group = new QButtonGroup(this);
+    for (int i=0;i<4;i++)
+    {
+        QPushButton *button = new QPushButton;
+        button->setFont(QFont("Ubuntu",22));
+        button->setMinimumHeight(60);
+        button->setFocusPolicy(Qt::NoFocus);
+        choice_group->addButton(button,i);
+        choices_row->addWidget(button);
+        if (quiz_mode)
+        {
+            QShortcut *shortcut = new QShortcut(QKeySequence(Qt::Key_1+i),page);
+            QObject::connect(shortcut,&QShortcut::activated,button,&QPushButton::click);
+        }
+    }
+    QObject::connect(choice_group,SIGNAL(idClicked(int)),this,SLOT(handleChoice(int)));
+    layout->addWidget(choices_panel);
+
+    input_panel->setVisible(!quiz_mode);
+    choices_panel->setVisible(quiz_mode);
     return page;
 }
 
@@ -218,7 +249,7 @@ bool PracticeWidget::isUnlimited()
 void PracticeWidget::updateBestScore()
 {
     bool unlimited = time_group->checkedId()==0;
-    best_label->setText(tr("Best score: %1").arg(loadScore(scoreFilePath(unlimited))));
+    best_label->setText(tr("Best score: %1").arg(loadScore(scoreFilePath(unlimited,quiz_mode))));
 }
 
 //the last checked kana box cannot be unchecked
@@ -231,12 +262,12 @@ void PracticeWidget::keepOneKanaChecked()
 void PracticeWidget::startGame()
 {
     time_limit = time_group->checkedId();
-    int count = count_group->checkedId();
+    int count = quiz_mode ? 1 : count_group->checkedId();
     QSettings settings;
-    settings.setValue("practice/hiragana",hiragana_check->isChecked());
-    settings.setValue("practice/katakana",katakana_check->isChecked());
-    settings.setValue("practice/time",time_limit);
-    settings.setValue("practice/cards",count);
+    settings.setValue(settings_prefix+"hiragana",hiragana_check->isChecked());
+    settings.setValue(settings_prefix+"katakana",katakana_check->isChecked());
+    settings.setValue(settings_prefix+"time",time_limit);
+    settings.setValue(settings_prefix+"cards",count);
 
     //less time gives more points
     level = time_limit==10 ? 3 : time_limit==20 ? 2 : 1;
@@ -260,9 +291,11 @@ void PracticeWidget::startGame()
     }
     for (KanaCard *card : cards)
         card->setKana(pickKana(),time_limit);
+    if (quiz_mode)
+        fillChoices();
 
     game_in_progress=true;
-    skip_button->setVisible(isUnlimited());
+    skip_button->setVisible(isUnlimited() && !quiz_mode);
     retranslate();
     pages->setCurrentIndex(1);
     selectCard(cards.first());
@@ -294,10 +327,15 @@ void PracticeWidget::selectCard(KanaCard *card)
     if (selected_card && selected_card!=card)
         selected_card->setTyped("");
     selected_card=card;
+    //the quiz has a single kana: no selection border
     for (KanaCard *c : cards)
-        c->setSelected(c==card);
+        c->setSelected(c==card && !quiz_mode);
     answer_input->clear();
-    answer_input->setFocus();
+    //a focused line edit would swallow the 1-4 keys of the quiz
+    if (quiz_mode)
+        setFocus();
+    else
+        answer_input->setFocus();
     restartSkipTimer();
 }
 
@@ -308,7 +346,7 @@ void PracticeWidget::restartSkipTimer()
     skip_animation->stop();
     skip_effect->setOpacity(0);
     skip_button->setEnabled(false);
-    if (!isUnlimited() || !selected_card)
+    if (!isUnlimited() || quiz_mode || !selected_card)
         return;
     skip_timer->start(qMax<qint64>(0,10000-selected_card->getElapsed()));
 }
@@ -321,7 +359,7 @@ void PracticeWidget::showSkipButton()
 
 void PracticeWidget::skip()
 {
-    if (game_in_progress && isUnlimited() && skip_button->isEnabled())
+    if (game_in_progress && isUnlimited() && !quiz_mode && skip_button->isEnabled())
         mistake(selected_card);
 }
 
@@ -354,6 +392,8 @@ void PracticeWidget::mistake(KanaCard *card)
 void PracticeWidget::replaceKana(KanaCard *card)
 {
     card->setKana(pickKana(),time_limit);
+    if (quiz_mode)
+        fillChoices();
     if (card==selected_card)
     {
         answer_input->clear();
@@ -364,7 +404,7 @@ void PracticeWidget::replaceKana(KanaCard *card)
 void PracticeWidget::endGame()
 {
     stopGame();
-    saveBestScore(scoreFilePath(isUnlimited()),score);
+    saveBestScore(scoreFilePath(isUnlimited(),quiz_mode),score);
     emit gameOver();
 }
 
@@ -382,6 +422,47 @@ void PracticeWidget::updateScore()
     if (mistakes!=0)
         score_text.append("   "+tr("Mistakes: %1").arg(mistakes));
     score_label->setText(score_text);
+}
+
+void PracticeWidget::fillChoices()
+{
+    //3 wrong romaji, all different, from the chosen scripts
+    QString solution = cards.first()->getKana()->getRomaji();
+    QStringList answers{solution};
+    while (answers.size()<4)
+    {
+        QString romaji = kana_list->getShuffledKana(hiragana_check->isChecked(),katakana_check->isChecked())->getRomaji();
+        if (!answers.contains(romaji))
+            answers.append(romaji);
+    }
+    //the right answer takes a random place
+    answers.swapItemsAt(0,QRandomGenerator::global()->bounded(4));
+    for (int i=0;i<4;i++)
+    {
+        choices[i]=answers[i];
+        choice_group->button(i)->setText(QString("%1.  %2").arg(i+1).arg(answers[i]));
+    }
+}
+
+//quiz: one of the 4 answer buttons was clicked
+void PracticeWidget::handleChoice(int index)
+{
+    if (!game_in_progress || !quiz_mode)
+        return;
+    KanaCard *card = cards.first();
+    if (choices[index]!=card->getKana()->getRomaji())
+    {
+        mistake(card);
+        return;
+    }
+    int gain = isUnlimited() ? 1 : card->getRemaining()%10+level;
+    if (streak)
+        gain*=2;
+    score+=gain;
+    streak=true;
+    showFeedback("<font color='green'>OK!</font>");
+    replaceKana(card);
+    updateScore();
 }
 
 //checked on each keystroke: green while on track, red otherwise

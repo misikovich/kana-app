@@ -10,8 +10,8 @@
 #include <QStandardPaths>
 
 //returns the path of the file containing the best score
-//unlimited time has its own best score
-QString scoreFilePath(bool unlimited=false);
+//the quiz and unlimited time have their own best scores
+QString scoreFilePath(bool unlimited=false, bool quiz=false);
 
 //returns the score located in the file passed as parameter
 int loadScore(QString);

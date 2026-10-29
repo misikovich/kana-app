@@ -13,6 +13,7 @@ public:
     MainMenuWidget();
     QPushButton* getButtonLearn();
     QPushButton* getButtonPractice();
+    QPushButton* getButtonQuiz();
     void createIcons();
     void changeEvent(QEvent* event);
     void retranslate();
@@ -21,6 +22,7 @@ signals:
 
 private:
     QPushButton* practice_button;
+    QPushButton* quiz_button;
     QPushButton* learn_button;
 };
 

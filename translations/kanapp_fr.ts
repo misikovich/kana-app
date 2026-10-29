@@ -32,58 +32,63 @@
 <context>
     <name>MainMenuWidget</name>
     <message>
-        <location filename="../MainMenuWidget.cpp" line="81"/>
+        <location filename="../MainMenuWidget.cpp" line="104"/>
         <source>Learn</source>
         <translation>Apprendre</translation>
     </message>
     <message>
-        <location filename="../MainMenuWidget.cpp" line="82"/>
+        <location filename="../MainMenuWidget.cpp" line="105"/>
         <source>Practice</source>
         <translation>Entraînement</translation>
+    </message>
+    <message>
+        <location filename="../MainMenuWidget.cpp" line="106"/>
+        <source>Quiz</source>
+        <translation>Quiz</translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../MainWindow.cpp" line="111"/>
-        <location filename="../MainWindow.cpp" line="149"/>
+        <location filename="../MainWindow.cpp" line="125"/>
+        <location filename="../MainWindow.cpp" line="163"/>
         <source>About</source>
         <translation>À propos</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="112"/>
+        <location filename="../MainWindow.cpp" line="126"/>
         <source>Notes</source>
         <translation>Notes</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="113"/>
+        <location filename="../MainWindow.cpp" line="127"/>
         <source>Language</source>
         <translation>Langue</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="114"/>
-        <location filename="../MainWindow.cpp" line="116"/>
+        <location filename="../MainWindow.cpp" line="128"/>
+        <location filename="../MainWindow.cpp" line="130"/>
         <source>Kana choice</source>
         <translation>Choix Kana</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="115"/>
+        <location filename="../MainWindow.cpp" line="129"/>
         <source>Back to menu</source>
         <translation>Retour Menu</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="117"/>
+        <location filename="../MainWindow.cpp" line="131"/>
         <source>Hiragana</source>
         <translation>Hiragana</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="118"/>
+        <location filename="../MainWindow.cpp" line="132"/>
         <source>Katakana</source>
         <translation>Katakana</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="119"/>
-        <location filename="../MainWindow.cpp" line="120"/>
+        <location filename="../MainWindow.cpp" line="133"/>
+        <location filename="../MainWindow.cpp" line="134"/>
         <source>Back</source>
         <translation>Retour</translation>
     </message>
@@ -104,77 +109,77 @@
 <context>
     <name>PracticeWidget</name>
     <message>
-        <location filename="../PracticeWidget.cpp" line="168"/>
+        <location filename="../PracticeWidget.cpp" line="204"/>
         <source>Kana:</source>
         <translation>Kana :</translation>
     </message>
     <message>
-        <location filename="../PracticeWidget.cpp" line="169"/>
+        <location filename="../PracticeWidget.cpp" line="205"/>
         <source>Hiragana</source>
         <translation>Hiragana</translation>
     </message>
     <message>
-        <location filename="../PracticeWidget.cpp" line="170"/>
+        <location filename="../PracticeWidget.cpp" line="206"/>
         <source>Katakana</source>
         <translation>Katakana</translation>
     </message>
     <message>
-        <location filename="../PracticeWidget.cpp" line="171"/>
+        <location filename="../PracticeWidget.cpp" line="207"/>
         <source>Time per kana:</source>
         <translation>Temps par kana :</translation>
     </message>
     <message>
-        <location filename="../PracticeWidget.cpp" line="175"/>
+        <location filename="../PracticeWidget.cpp" line="211"/>
         <source>%1 s</source>
         <translation>%1 s</translation>
     </message>
     <message>
-        <location filename="../PracticeWidget.cpp" line="176"/>
+        <location filename="../PracticeWidget.cpp" line="212"/>
         <source>%1 seconds</source>
         <translation>%1 secondes</translation>
     </message>
     <message>
-        <location filename="../PracticeWidget.cpp" line="176"/>
+        <location filename="../PracticeWidget.cpp" line="212"/>
         <source>Unlimited time</source>
         <translation>Temps illimité</translation>
     </message>
     <message>
-        <location filename="../PracticeWidget.cpp" line="178"/>
+        <location filename="../PracticeWidget.cpp" line="214"/>
         <source>Kana shown:</source>
         <translation>Kana affichés :</translation>
     </message>
     <message>
-        <location filename="../PracticeWidget.cpp" line="179"/>
+        <location filename="../PracticeWidget.cpp" line="215"/>
         <source>Start</source>
         <translation>Commencer</translation>
     </message>
     <message>
-        <location filename="../PracticeWidget.cpp" line="180"/>
+        <location filename="../PracticeWidget.cpp" line="216"/>
         <source>Click a kana, then type its romaji</source>
         <translation>Cliquez sur un kana, puis tapez son rômaji</translation>
     </message>
     <message>
-        <location filename="../PracticeWidget.cpp" line="181"/>
+        <location filename="../PracticeWidget.cpp" line="217"/>
         <source>Type the romaji</source>
         <translation>Tapez le rômaji</translation>
     </message>
     <message>
-        <location filename="../PracticeWidget.cpp" line="182"/>
+        <location filename="../PracticeWidget.cpp" line="218"/>
         <source>Skip</source>
         <translation>Passer</translation>
     </message>
     <message>
-        <location filename="../PracticeWidget.cpp" line="216"/>
+        <location filename="../PracticeWidget.cpp" line="252"/>
         <source>Best score: %1</source>
         <translation>Meilleur score : %1</translation>
     </message>
     <message>
-        <location filename="../PracticeWidget.cpp" line="376"/>
+        <location filename="../PracticeWidget.cpp" line="416"/>
         <source>Score: %1</source>
         <translation>Score : %1</translation>
     </message>
     <message>
-        <location filename="../PracticeWidget.cpp" line="378"/>
+        <location filename="../PracticeWidget.cpp" line="418"/>
         <source>Mistakes: %1</source>
         <translation>Fautes : %1</translation>
     </message>

@@ -5,6 +5,7 @@ MainMenuWidget::MainMenuWidget()
     QVBoxLayout *main_layout = new QVBoxLayout(this);
     learn_button  =    new QPushButton;
     practice_button = new QPushButton;
+    quiz_button = new QPushButton;
 
     QLabel *welcome_label = new QLabel("- Kana Learning -");
     welcome_label->setFont(QFont("Ubuntu",40));
@@ -47,11 +48,28 @@ MainMenuWidget::MainMenuWidget()
                                 "     border-style: inset;"
                                 " }");
 
+    quiz_button->setStyleSheet(" QPushButton {"
+                                "     background-color: #2fae5b;"
+                                "     border-style: outset;"
+                                "     border-width: 2px;"
+                                "     border-radius: 10px;"
+                                "     border-color: beige;"
+                                "     font: bold 14px;"
+                                "     min-width: 10em;"
+                                "     padding: 6px;"
+                                " }"
+                                " QPushButton:pressed {"
+                                "     background-color: #23854a;"
+                                "     border-style: inset;"
+                                " }");
+
     practice_button->setMinimumSize(80,80);
+    quiz_button->setMinimumSize(80,80);
     learn_button->setMinimumSize(80,80);
 
     main_layout->addWidget(learn_button);
     main_layout->addWidget(practice_button);
+    main_layout->addWidget(quiz_button);
 
     retranslate();
 
@@ -61,6 +79,11 @@ MainMenuWidget::MainMenuWidget()
 QPushButton* MainMenuWidget::getButtonPractice()
 {
     return practice_button;
+}
+
+QPushButton* MainMenuWidget::getButtonQuiz()
+{
+    return quiz_button;
 }
 
 QPushButton* MainMenuWidget::getButtonLearn()
@@ -80,6 +103,7 @@ void MainMenuWidget::retranslate()
 {
     learn_button->setText(tr("Learn"));
     practice_button->setText(tr("Practice"));
+    quiz_button->setText(tr("Quiz"));
 }
 
 void MainMenuWidget::createIcons()

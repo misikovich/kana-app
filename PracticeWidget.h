@@ -27,7 +27,9 @@ class PracticeWidget : public QWidget
 {
     Q_OBJECT
 public:
-    PracticeWidget();
+    //quiz=false: type the romaji of 1, 2 or 4 kana
+    //quiz=true: one kana and 4 romaji to choose from
+    explicit PracticeWidget(bool quiz=false);
     //shows the settings page with the saved best scores
     void reset();
     int getScore();
@@ -38,6 +40,7 @@ public:
 public slots:
     void startGame();
     void handleAnswer(QString);
+    void handleChoice(int);
     void selectCard(KanaCard*);
     void onTimeUp(KanaCard*);
     void skip();
@@ -56,11 +59,16 @@ private:
     //counts a mistake, then replaces the kana of the card
     void mistake(KanaCard*);
     void replaceKana(KanaCard*);
+    //quiz: puts the right romaji and 3 wrong ones on the answer buttons
+    void fillChoices();
     void restartSkipTimer();
     void showFeedback(const QString &text);
     void updateScore();
     void endGame();
 
+    bool quiz_mode;
+    //QSettings group of the mode: "practice/" or "quiz/"
+    QString settings_prefix;
     KanaList* kana_list;
     QStackedWidget *pages;
     QPointer<FaderWidget> faderWidget;
@@ -82,6 +90,9 @@ private:
     QList<KanaCard*> cards;
     KanaCard *selected_card;
     QLineEdit *answer_input;
+    //quiz answers ( button id = position 0-3 )
+    QButtonGroup *choice_group;
+    QString choices[4];
     QLabel *feedback_label;
     QPropertyAnimation *feedback_animation;
     QPushButton *skip_button;

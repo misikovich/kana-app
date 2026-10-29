@@ -33,6 +33,7 @@ public slots:
     void showAboutDialog();
     void showLearning();
     void showPractice();
+    void showQuiz();
     void showMainMenu();
     //enables the animation:
     void fadeInWidget(int index);
@@ -48,6 +49,8 @@ private:
 
     KanaWidget *kana_widget;
     PracticeWidget *practice_widget;
+    //same widget in quiz mode ( 4 answers to choose from )
+    PracticeWidget *quiz_widget;
     PracticeEndWidget *practice_end_widget;
     QComboBox *kana_combo_box;
     QStackedWidget *stacked_widgets;

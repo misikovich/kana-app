@@ -5,10 +5,12 @@ MainWindow::MainWindow()
     kana_widget = new KanaWidget();
     setCentralWidget(kana_widget);
     practice_widget= new PracticeWidget();
+    quiz_widget= new PracticeWidget(true);
     MainMenuWidget *main_menu_widget= new MainMenuWidget();
 
     QObject::connect(main_menu_widget->getButtonLearn(),SIGNAL(clicked()),this,SLOT(showLearning()));
     QObject::connect(main_menu_widget->getButtonPractice(),SIGNAL(clicked()),this,SLOT(showPractice()));
+    QObject::connect(main_menu_widget->getButtonQuiz(),SIGNAL(clicked()),this,SLOT(showQuiz()));
 
 
     setWindowTitle("Kana Learning");
@@ -18,10 +20,12 @@ MainWindow::MainWindow()
     stacked_widgets->addWidget(kana_widget);
     stacked_widgets->addWidget(practice_widget);
     stacked_widgets->addWidget(practice_end_widget);
+    stacked_widgets->addWidget(quiz_widget);
     setCentralWidget(stacked_widgets);
     QObject::connect(stacked_widgets, SIGNAL(currentChanged(int)), this, SLOT(fadeInWidget(int)));
 
     QObject::connect(practice_widget, SIGNAL(gameOver()), this, SLOT(showPracticeEnd()));
+    QObject::connect(quiz_widget, SIGNAL(gameOver()), this, SLOT(showPracticeEnd()));
 
     createMenu();
     createKanaToolBar();
@@ -53,10 +57,18 @@ void MainWindow::showPractice()
     practiceToolBar->setVisible(true);
 }
 
+void MainWindow::showQuiz()
+{
+    stacked_widgets->setCurrentIndex(4);
+    quiz_widget->reset();
+    practiceToolBar->setVisible(true);
+}
+
 void MainWindow::showMainMenu()
 {
     //stops the current game so that the timer does not end the game in the background
     practice_widget->stopGame();
+    quiz_widget->stopGame();
     stacked_widgets->setCurrentIndex(0);
     kanaToolBar->setVisible(false);
     practiceToolBar->setVisible(false);
@@ -67,7 +79,9 @@ void MainWindow::showMainMenu()
 void MainWindow::showPracticeEnd()
 {
     //display of the score ( PracticeWidget saves the best score )
-    practice_end_widget->setScore(practice_widget->getScore());
+    //the game that just ended is the practice or the quiz
+    PracticeWidget *game = qobject_cast<PracticeWidget*>(sender());
+    practice_end_widget->setScore(game ? game->getScore() : 0);
     stacked_widgets->setCurrentIndex(3);
 }
 
