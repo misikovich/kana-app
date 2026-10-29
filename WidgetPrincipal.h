@@ -5,13 +5,17 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QLabel>
+#include <QEvent>
 class WidgetPrincipal : public QWidget
 {
+    Q_OBJECT
 public:
     WidgetPrincipal();
     QPushButton* getButtonLearn();
     QPushButton* getButtonQuizz();
     void createIcons();
+    void changeEvent(QEvent* event);
+    void retraduit();
 
 signals:
 

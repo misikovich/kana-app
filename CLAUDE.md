@@ -11,7 +11,7 @@ Kanapp: a Qt Widgets desktop app (C++) for learning Japanese kana. It has a brow
 There are no tests and no linter. The code builds with **Qt 6** (Widgets + Multimedia). `CMakeLists.txt` is the main build; `kanapp.pro` (qmake) still works for native builds, and each must list any new source file.
 
 ```sh
-# Native Linux build (apt: qt6-base-dev qt6-multimedia-dev cmake ninja-build)
+# Native Linux build (apt: qt6-base-dev qt6-multimedia-dev qt6-l10n-tools qt6-tools-dev cmake ninja-build)
 cmake -S . -B build-linux -G Ninja && cmake --build build-linux && ./build-linux/kanapp
 
 # Windows x86_64 cross-build + portable package -> dist/kanapp-windows.zip
@@ -39,6 +39,7 @@ How the Windows cross-build works (`build-windows.sh`, `cmake/mingw-w64-x86_64.c
 - **Audio**: `WidgetKana::pronounce()` plays, through a `QSoundEffect`, `qrc:/sons/ressources/sons/<romaji>.wav`. Each romaji therefore needs a matching `.wav` in `ressources/sons/` and an entry in `Sons.qrc`. (This is why `wi`/`we` are left out.)
 - **Quiz flow** (`WidgetQuizz`): the player picks a level, which sets the per-kana countdown to 10, 20, or 30 s. `TimeCompteur` (a QLCDNumber + QTimer) emits `finCompteur()` when it runs out. That counts as a mistake and moves to the next question. Answers are checked on each keystroke (`textEdited` → `gereReponse`). After more than 5 mistakes the widget emits `finPartie()`, and `FenetreKana` then shows page 3.
 - **Score persistence** (`GestionScore`): free functions that read and write a single integer best score in a plain-text file at `cheminScore()`, which is `QStandardPaths::AppDataLocation/score_data` (e.g. `%APPDATA%/Najimi/Kana Learning/` on Windows). The repo's `score_data` file is unused.
+- **Translations** (Qt Linguist): French is the source language. Every UI string goes through `tr()`, and `traductions/kanapp_en.ts` / `kanapp_ru.ts` hold the translations. Both builds compile them with `lrelease` and embed them under `:/i18n/` (CMake `qt_add_translations`, qmake `embed_translations`). `GestionLangue` installs the `QTranslator` and stores the choice in `QSettings` (key `langue`). On first launch it uses the system language if available, otherwise French. The "Langue" menu in `FenetreKana` switches language live. Each widget handles `QEvent::LanguageChange` in `changeEvent()` and resets its texts in `retraduit()`, so set UI text there rather than in constructors. Text that depends on state (score, show/hide romaji) has to be rebuilt from member variables. The kana combo box is index-based (0 hiragana, 1 katakana) because its item texts are translated. After changing strings, run `cmake --build build-linux --target update_translations`, fill in the new `<translation>` entries, and keep the `.ts` files in git. When cross-compiling, `LinguistTools` comes from the host Qt (`QT_HOST_PATH_CMAKE_DIR`), because the Windows Qt archives don't include qttools. Needs apt `qt6-l10n-tools qt6-tools-dev`.
 - Resource paths keep the full on-disk prefix: `:/images/ressources/images/...`, `:/sons/ressources/sons/...`.
 
 ## Dead / unwired files

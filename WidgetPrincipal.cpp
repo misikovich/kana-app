@@ -3,8 +3,8 @@
 WidgetPrincipal::WidgetPrincipal()
 {
     QVBoxLayout *layout_base = new QVBoxLayout(this);
-    button_learn  =    new QPushButton("Learn");
-    button_quizz = new QPushButton("Quizz");
+    button_learn  =    new QPushButton;
+    button_quizz = new QPushButton;
 
     QLabel *bienvenue = new QLabel("- Kana Learning -");
     bienvenue->setFont(QFont("Ubuntu",40));
@@ -53,6 +53,7 @@ WidgetPrincipal::WidgetPrincipal()
     layout_base->addWidget(button_learn);
     layout_base->addWidget(button_quizz);
 
+    retraduit();
 
 
 }
@@ -67,6 +68,19 @@ QPushButton* WidgetPrincipal::getButtonLearn()
     return button_learn;
 }
 
+
+void WidgetPrincipal::changeEvent(QEvent* event)
+{
+    if (event->type()==QEvent::LanguageChange)
+        retraduit();
+    QWidget::changeEvent(event);
+}
+
+void WidgetPrincipal::retraduit()
+{
+    button_learn->setText(tr("Apprendre"));
+    button_quizz->setText(tr("Quiz"));
+}
 
 void WidgetPrincipal::createIcons()
 {

@@ -11,6 +11,9 @@ WidgetQuizz::WidgetQuizz()
     affilee=false;
     bonus=false;
     choix_niveau_widget=nullptr;
+    bouton_niveau[0]=bouton_niveau[1]=bouton_niveau[2]=nullptr;
+    meilleur_score=0;
+    partie_en_cours=false;
     QFont police_jap = QFont("Ubuntu",180);
     QFont police_romaji = QFont("Ubuntu",120);
     kana_cherche=new QLabel();
@@ -31,7 +34,7 @@ WidgetQuizz::WidgetQuizz()
     QObject::connect(reponse_input,SIGNAL(textEdited(QString)),reponse_instantanee,SLOT(setText(QString)));
     QObject::connect(reponse_input,SIGNAL(textEdited(QString)),this,SLOT(gereReponse(QString)));
 
-    score_label=new QLabel("Meilleur Score :");
+    score_label=new QLabel;
     //lecture d'un fichier score
     layout->addWidget(score_label);
 
@@ -61,12 +64,38 @@ WidgetQuizz::WidgetQuizz()
 
 
     createLevelOne();
+    retraduit();
 
 }
-//initialisation du widget : affichage du bouton commencer et reset du timer
-void WidgetQuizz::initialisation(int meilleur_score)
+
+void WidgetQuizz::changeEvent(QEvent* event)
 {
-    score_label->setText("Meilleur score: "+QString::number(meilleur_score));
+    if (event->type()==QEvent::LanguageChange)
+        retraduit();
+    QWidget::changeEvent(event);
+}
+
+void WidgetQuizz::retraduit()
+{
+    bouton_lancer_timer->setText(tr("Commencer"));
+    texte_accueil->setText("<center>"+tr("Apprenez les kanas en vous amusant !")+"</center>");
+    //le label n'est pas dans un layout : sa taille suit la longueur du texte
+    texte_accueil->adjustSize();
+    int secondes[3]={10,20,30};
+    for (int i=0;i<3;i++)
+        if (bouton_niveau[i])
+            bouton_niveau[i]->setText(tr("%1 secondes").arg(secondes[i]));
+    if (partie_en_cours)
+        updateScore();
+    else
+        score_label->setText(tr("Meilleur score : %1").arg(meilleur_score));
+}
+//initialisation du widget : affichage du bouton commencer et reset du timer
+void WidgetQuizz::initialisation(int meilleur)
+{
+    meilleur_score=meilleur;
+    partie_en_cours=false;
+    retraduit();
     stacked_widgets->setCurrentWidget(bouton_lancer_timer);
     compteur->stoppeCompteur();
     compteur->setVisible(false);
@@ -89,6 +118,7 @@ void WidgetQuizz::stoppePartie()
 // slot activé quand clique sur bouton niveau 1,2,3
 void WidgetQuizz::creationCompteur(int debut)
 {
+    partie_en_cours=true;
     compteur->setBegin(debut);
     compteur->setVisible(true);
     reponse_input->setVisible(true);
@@ -130,10 +160,10 @@ void WidgetQuizz::lanceQuestion()
 void WidgetQuizz::updateScore()
 {
     //affichage du score et du nombre de fautes
-    QString chaine_score("Score : "+QString::number(score));
+    QString chaine_score(tr("Score : %1").arg(score));
 
     if (nb_fautes!=0)
-        chaine_score.append("   Fautes: "+QString::number(nb_fautes));
+        chaine_score.append("   "+tr("Fautes : %1").arg(nb_fautes));
     score_label->setText(chaine_score);
 }
 
@@ -154,9 +184,13 @@ void WidgetQuizz::choixNiveau()
     QWidget *choix_niveau  = new QWidget;
     choix_niveau_widget = choix_niveau;
     QVBoxLayout *layout = new QVBoxLayout(choix_niveau);
-    QPushButton *bouton1 = new QPushButton("10 secondes");
-    QPushButton *bouton2 = new QPushButton("20 secondes");
-    QPushButton *bouton3 = new QPushButton("30 secondes");
+    QPushButton *bouton1 = new QPushButton;
+    QPushButton *bouton2 = new QPushButton;
+    QPushButton *bouton3 = new QPushButton;
+    bouton_niveau[0]=bouton1;
+    bouton_niveau[1]=bouton2;
+    bouton_niveau[2]=bouton3;
+    retraduit();
 
 
     layout->addWidget(bouton1);
@@ -180,7 +214,6 @@ void WidgetQuizz::niveau1()
     creationCompteur(10);
     stacked_widgets->setCurrentWidget(reponse_instantanee);
     niveau=3;
-    score_label->setText("Score:");
 
     nouvelleQuestion();
 }
@@ -190,7 +223,6 @@ void WidgetQuizz::niveau2()
     creationCompteur(20);
     stacked_widgets->setCurrentWidget(reponse_instantanee);
     niveau=2;
-    score_label->setText("Score:");
 
     nouvelleQuestion();
 
@@ -200,7 +232,6 @@ void WidgetQuizz::niveau3()
 {
     creationCompteur(30);
     stacked_widgets->setCurrentWidget(reponse_instantanee);
-    score_label->setText("Score:");
     niveau=1;
 
     nouvelleQuestion();
@@ -349,9 +380,9 @@ void WidgetQuizz::creationMenu()
     choix_niveau->addWidget(niveau2);
     choix_niveau->addWidget(niveau3);
 
-    QPushButton *button_1 = new QPushButton("Niveau 1");
-    QPushButton *button_2 = new QPushButton("Niveau 2");
-    QPushButton *button_3 = new QPushButton("Niveau 3");
+    QPushButton *button_1 = new QPushButton(tr("Niveau %1").arg(1));
+    QPushButton *button_2 = new QPushButton(tr("Niveau %1").arg(2));
+    QPushButton *button_3 = new QPushButton(tr("Niveau %1").arg(3));
     QVBoxLayout *layout = new QVBoxLayout(this);
 
 
@@ -407,12 +438,12 @@ void WidgetQuizz::creationMenu()
 
 void WidgetQuizz::createLevelOne()
 {
-    bouton_lancer_timer = new QPushButton("Commencer");
+    bouton_lancer_timer = new QPushButton;
     QObject::connect(bouton_lancer_timer,SIGNAL(clicked()),this,SLOT(choixNiveau()));
     stacked_widgets->addWidget(bouton_lancer_timer);
 
 
-    QLabel *bg = new QLabel("<center>Apprenez les kanas en vous amusant ! </center>",bouton_lancer_timer);
+    texte_accueil = new QLabel(bouton_lancer_timer);
 
     bouton_lancer_timer->setStyleSheet(" QPushButton {"
                                        "     background-color: #22BBD6;"

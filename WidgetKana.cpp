@@ -20,11 +20,11 @@ WidgetKana::WidgetKana()
 
     QHBoxLayout* layout_fleches = new QHBoxLayout;
 
-    QPushButton* fleche_gauche = new QPushButton("Précédent");
-    QPushButton* fleche_droite = new QPushButton("Suivant");
-    hide_romaji = new QPushButton("Cacher Romaji");
+    fleche_gauche = new QPushButton;
+    fleche_droite = new QPushButton;
+    hide_romaji = new QPushButton;
 
-    QPushButton* prononciation = new QPushButton("Prononcer");
+    prononciation = new QPushButton;
 
 
     fleche_droite->setStyleSheet(" QPushButton {"
@@ -102,7 +102,27 @@ WidgetKana::WidgetKana()
     //connexion prononciation
     QObject::connect(prononciation,SIGNAL(clicked()),this,SLOT(pronounce()));
 
+    retraduit();
     afficheKanaActuel();
+}
+
+void WidgetKana::changeEvent(QEvent* event)
+{
+    if (event->type()==QEvent::LanguageChange)
+        retraduit();
+    QWidget::changeEvent(event);
+}
+
+void WidgetKana::retraduit()
+{
+    fleche_gauche->setText(tr("Précédent"));
+    fleche_droite->setText(tr("Suivant"));
+    prononciation->setText(tr("Prononcer"));
+    // le texte du bouton dépend du statut actif du spoil
+    if (spoil_actif)
+        hide_romaji->setText(tr("Cacher le romaji"));
+    else
+        hide_romaji->setText(tr("Afficher le romaji"));
 }
 
 
@@ -125,13 +145,9 @@ void WidgetKana::afficheKanaActuel()
 // active/desactive le spoil à chaque appel
 void WidgetKana::afficheSpoil()
 {
-    // en fonction du statut actif du spoil on change le texte du bouton
-    if (spoil_actif)
-        hide_romaji->setText("Afficher Romaji");
-    else
-        hide_romaji->setText("Cacher Romaji");
-
     spoil_actif=!spoil_actif;
+    // en fonction du statut actif du spoil on change le texte du bouton
+    retraduit();
     afficheKanaActuel();
 }
 
@@ -161,9 +177,10 @@ Kana* WidgetKana::getCurrentKana()
 
 
 // à terme permettra de selectionner un kanji en rajoutant un choix
-void::WidgetKana::setKana(QString choix)
+// index de la liste déroulante : 0 hiragana, 1 katakana
+void WidgetKana::setKana(int choix)
 {
-    hiragana=(choix=="Hiragana");
+    hiragana=(choix==0);
     afficheKanaActuel();
 }
 

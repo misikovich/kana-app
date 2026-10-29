@@ -22,13 +22,15 @@ public:
     WidgetKana();
     void afficheKanaActuel();
     void createIcons();
+    void changeEvent(QEvent* event);
+    void retraduit();
 
 public slots:
     void afficheSpoil();
     void moveToLeft();
     void moveToRight();
     void pronounce();
-    void setKana(QString);
+    void setKana(int);
 signals:
 
 private:
@@ -40,6 +42,9 @@ private:
     Kana* getCurrentKana();
     //bouton afficher_romaji qui change quand on appuie dessus
     QPushButton* hide_romaji;
+    QPushButton* fleche_gauche;
+    QPushButton* fleche_droite;
+    QPushButton* prononciation;
     //lecture du son du kana
     QSoundEffect* son;
 };

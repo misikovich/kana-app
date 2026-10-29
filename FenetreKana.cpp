@@ -26,6 +26,7 @@ FenetreKana::FenetreKana()
     creationMenu();
     creationToolBarKana();
     creationToolBarQuizz();
+    retraduit();
 
 }
 
@@ -80,9 +81,48 @@ void FenetreKana::lanceFinQuiz()
 void FenetreKana::creationMenu()
 {
 
-    QMenu *menu_file = menuBar()->addMenu("About");
-    QAction *action_note = menu_file->addAction("Notes");
+    menu_about = menuBar()->addMenu("");
+    action_note = menu_about->addAction("");
     QObject::connect(action_note,SIGNAL(triggered()),this,SLOT(affichePopupNote()));
+
+    //menu des langues : une action cochable par langue, le nom de chaque langue n'est pas traduit
+    menu_langue = menuBar()->addMenu("");
+    QActionGroup *groupe_langues = new QActionGroup(this);
+    for (const QString &code : languesDisponibles())
+    {
+        QAction *action = menu_langue->addAction(nomLangue(code));
+        action->setData(code);
+        action->setCheckable(true);
+        action->setChecked(code==langueActuelle());
+        groupe_langues->addAction(action);
+    }
+    QObject::connect(groupe_langues,SIGNAL(triggered(QAction*)),this,SLOT(changeLangue(QAction*)));
+}
+
+void FenetreKana::changeLangue(QAction* action)
+{
+    appliqueLangue(action->data().toString());
+}
+
+void FenetreKana::changeEvent(QEvent* event)
+{
+    if (event->type()==QEvent::LanguageChange)
+        retraduit();
+    QMainWindow::changeEvent(event);
+}
+
+void FenetreKana::retraduit()
+{
+    menu_about->setTitle(tr("À propos"));
+    action_note->setText(tr("Notes"));
+    menu_langue->setTitle(tr("Langue"));
+    toolBarKana->setWindowTitle(tr("Choix Kana"));
+    toolBarQuizz->setWindowTitle(tr("Retour Menu"));
+    label_choix_kana->setText("<i>"+tr("Choix Kana")+"</i>");
+    liste_deroulante_kana->setItemText(0,tr("Hiragana"));
+    liste_deroulante_kana->setItemText(1,tr("Katakana"));
+    bouton_retour_kana->setText(tr("Retour"));
+    bouton_retour_quizz->setText(tr("Retour"));
 }
 
 /* fonction permettant la gestion des évènements clavier */
@@ -96,13 +136,11 @@ void FenetreKana::keyPressEvent(QKeyEvent* event)
             widget_kana->moveToRight();
         else if (event->key() == Qt::Key_Up)
         {
-            int index = liste_deroulante_kana->findText("Hiragana");
-            liste_deroulante_kana->setCurrentIndex(index);
+            liste_deroulante_kana->setCurrentIndex(0);
         }
         else if (event->key() == Qt::Key_Down)
         {
-            int index = liste_deroulante_kana->findText("Katakana");
-            liste_deroulante_kana->setCurrentIndex(index);
+            liste_deroulante_kana->setCurrentIndex(1);
         }
 
         else if (event->key() == Qt::Key_Space)
@@ -113,12 +151,12 @@ void FenetreKana::keyPressEvent(QKeyEvent* event)
 
 void FenetreKana::affichePopupNote()
 {
-    QMessageBox::information(this,"About","Adonis Najimi \n DUT INFORMATIQUE \n NANCY CHARLEMAGNE");
+    QMessageBox::information(this,tr("À propos"),"Adonis Najimi \n DUT INFORMATIQUE \n NANCY CHARLEMAGNE");
 }
 
 void FenetreKana::creationToolBarKana()
 {
-    toolBarKana = addToolBar("Choix Kana");
+    toolBarKana = addToolBar("");
     toolBarKana->setMovable(false);
     toolBarKana->setFloatable(false);
     toolBarKana->setVisible(false);
@@ -127,32 +165,30 @@ void FenetreKana::creationToolBarKana()
     toolBarKana->setContextMenuPolicy(Qt::PreventContextMenu);
 
     liste_deroulante_kana = new QComboBox();
-    liste_deroulante_kana->addItem("Hiragana");
-    liste_deroulante_kana->addItem("Katakana");
+    //index 0 : hiragana, index 1 : katakana ( les textes sont traduits dans retraduit() )
+    liste_deroulante_kana->addItem("");
+    liste_deroulante_kana->addItem("");
 
 
     // layout toolbar
-    QPushButton *bouton_retour = new QPushButton("Retour");
+    bouton_retour_kana = new QPushButton;
+    bouton_retour_kana->setIcon(QIcon(":/images/ressources/images/retour.png"));
 
-
-
-    bouton_retour->setIcon(QIcon(":/images/ressources/images/retour.png"));
-
-
-    toolBarKana->addWidget(bouton_retour);
-    QObject::connect(bouton_retour,SIGNAL(clicked()),this,SLOT(retourFenetrePrincipale()));
-    toolBarKana->addWidget(new QLabel("<i>Choix Kana</i>"));
+    toolBarKana->addWidget(bouton_retour_kana);
+    QObject::connect(bouton_retour_kana,SIGNAL(clicked()),this,SLOT(retourFenetrePrincipale()));
+    label_choix_kana = new QLabel;
+    toolBarKana->addWidget(label_choix_kana);
     toolBarKana->addWidget(liste_deroulante_kana);
 
     //liaison de la liste avec le widget gérant les kanas
-    QObject::connect(liste_deroulante_kana,SIGNAL(currentTextChanged(QString)),widget_kana,SLOT(setKana(QString)));
+    QObject::connect(liste_deroulante_kana,SIGNAL(currentIndexChanged(int)),widget_kana,SLOT(setKana(int)));
 
 
 
 }
 void FenetreKana::creationToolBarQuizz()
 {
-    toolBarQuizz = addToolBar("Retour Menu");
+    toolBarQuizz = addToolBar("");
     toolBarQuizz->setMovable(false);
     toolBarQuizz->setFloatable(false);
     toolBarQuizz->setVisible(false);
@@ -160,15 +196,15 @@ void FenetreKana::creationToolBarQuizz()
     //cette ligne empêche la barre d'être supprimée
     toolBarQuizz->setContextMenuPolicy(Qt::PreventContextMenu);
 
-    QPushButton *bouton_retour = new QPushButton("Retour");
-      bouton_retour->setIcon(QIcon(":/images/ressources/images/retour.png"));
+    bouton_retour_quizz = new QPushButton;
+      bouton_retour_quizz->setIcon(QIcon(":/images/ressources/images/retour.png"));
       QWidget *bg = new QWidget;
       QVBoxLayout *bg_layout = new QVBoxLayout;
-      bg_layout->addWidget(bouton_retour,0,Qt::AlignCenter | Qt::AlignHCenter);
+      bg_layout->addWidget(bouton_retour_quizz,0,Qt::AlignCenter | Qt::AlignHCenter);
       bg->setLayout(bg_layout);
       toolBarQuizz->addWidget(bg);
 
-      QObject::connect(bouton_retour,SIGNAL(clicked()),this,SLOT(retourFenetrePrincipale()));
+      QObject::connect(bouton_retour_quizz,SIGNAL(clicked()),this,SLOT(retourFenetrePrincipale()));
 }
 
 

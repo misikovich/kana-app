@@ -16,6 +16,7 @@
 #include <QListWidgetItem>
 #include "WidgetFinQuizz.h"
 #include "GestionScore.h"
+#include "GestionLangue.h"
 class FenetreKana : public QMainWindow
 {
     Q_OBJECT
@@ -25,6 +26,9 @@ public:
     void creationToolBarKana();
     void creationToolBarQuizz();
     void keyPressEvent(QKeyEvent* event);
+    //met à jour les textes quand la langue change
+    void changeEvent(QEvent* event);
+    void retraduit();
 public slots:
     void affichePopupNote();
     void lanceWidgetLearning();
@@ -33,6 +37,7 @@ public slots:
     //permet l'animation :
     void fadeInWidget(int index);
     void lanceFinQuiz();
+    void changeLangue(QAction* action);
 
 
 
@@ -46,6 +51,13 @@ private:
     WidgetFinQuizz *widget_fin_quizz;
     QComboBox *liste_deroulante_kana;
     QStackedWidget *stacked_widgets;
+    //textes à retraduire
+    QMenu *menu_about;
+    QAction *action_note;
+    QMenu *menu_langue;
+    QLabel *label_choix_kana;
+    QPushButton *bouton_retour_kana;
+    QPushButton *bouton_retour_quizz;
     //permet l'animation :
     QPointer<FaderWidget> faderWidget;
 

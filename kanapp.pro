@@ -1,4 +1,4 @@
-CONFIG += qt
+CONFIG += qt lrelease embed_translations
 QT += widgets
 QT += multimedia
 
@@ -15,7 +15,8 @@ SOURCES += \
     FaderWidget.cpp \
     TimeCompteur.cpp \
     WidgetFinQuizz.cpp \
-    GestionScore.cpp
+    GestionScore.cpp \
+    GestionLangue.cpp
 
 HEADERS += \
     Kana.h \
@@ -27,7 +28,13 @@ HEADERS += \
     FaderWidget.h \
     TimeCompteur.h \
     WidgetFinQuizz.h \
-    GestionScore.h
+    GestionScore.h \
+    GestionLangue.h
+
+# le français est la langue des sources, les .qm sont intégrés sous :/i18n/
+TRANSLATIONS += \
+    traductions/kanapp_en.ts \
+    traductions/kanapp_ru.ts
 
 RESOURCES += \
     Images.qrc \

@@ -37,6 +37,8 @@ public:
     void initialisation(int); // en paramètre le meilleur score
     int getScore();
     void stoppePartie();
+    void changeEvent(QEvent* event);
+    void retraduit();
 public slots:
     void gereReponse(QString);
     void fadeInWidget(int index);
@@ -82,6 +84,14 @@ private:
     int nb_fautes;
     //label qui affiche OK! ou :( en fonction de la réponse
     QLabel *reponse_ok;
+    //texte affiché sur le bouton commencer
+    QLabel *texte_accueil;
+    //boutons du menu des niveaux ( nullptr tant que le menu n'est pas créé )
+    QPushButton *bouton_niveau[3];
+    //meilleur score affiché avant le début de la partie
+    int meilleur_score;
+    //vrai une fois le niveau choisi : le label affiche alors le score de la partie
+    bool partie_en_cours;
 };
 
 #endif // WIDGETQUIZZ_H
