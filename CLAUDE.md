@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Kanapp: a Qt Widgets desktop app (C++) for learning Japanese kana. It has a browse mode (step through hiragana/katakana and play each one's pronunciation) and a timed quiz (type the romaji). It was written as a learning project. Identifiers, comments, and UI strings are mostly in **French** (`Fenetre` = window, `Liste` = list, `Sons` = sounds, `niveau` = level, `fautes` = mistakes, `Retour` = back). Keep new code consistent with that.
+Kanapp: a Qt Widgets desktop app (C++) for learning Japanese kana. It has a browse mode (step through hiragana/katakana and play each one's pronunciation) and a timed quiz (type the romaji). It was written as a learning project. Code, comments and source UI strings are in **English**; French and Russian are translations. A few leftovers keep their French names: the resource folders and files (`ressources/`, `sons/`, `Sons.qrc`) and the dead files listed at the end.
 
 ## Build & run
 
@@ -27,19 +27,20 @@ How the Windows cross-build works (`build-windows.sh`, `cmake/mingw-w64-x86_64.c
 
 ## Architecture
 
-- `main.cpp` creates `FenetreKana` (a `QMainWindow`). It owns a `QStackedWidget` with fixed page indices:
-  - `0` `WidgetPrincipal`: menu with the "learn" and "quiz" buttons
-  - `1` `WidgetKana`: kana browser
-  - `2` `WidgetQuizz`: the quiz
-  - `3` `WidgetFinQuizz`: end-of-quiz score screen
+- `main.cpp` creates `MainWindow` (a `QMainWindow`). It owns a `QStackedWidget` with fixed page indices:
+  - `0` `MainMenuWidget`: menu with the "learn" and "quiz" buttons
+  - `1` `KanaWidget`: kana browser
+  - `2` `QuizWidget`: the quiz
+  - `3` `QuizEndWidget`: end-of-quiz score screen
 
-  Navigation calls `setCurrentIndex(n)` with these hard-coded indices, so changing the page order means updating every one of those call sites. Each page has its own toolbar (`toolBarKana` / `toolBarQuizz`), and visibility is toggled per page. Every page change runs a fade animation through `FaderWidget`, and `WidgetQuizz` uses the same pattern internally.
-- Keyboard input for the browser is handled centrally in `FenetreKana::keyPressEvent`, not in `WidgetKana`: Left/Right steps through kana, Up/Down switches between Hiragana and Katakana, Space reveals the romaji.
-- **Kana data** lives in `ListeKana`, which holds parallel hard-coded arrays (hiragana, katakana, and romaji shared by both scripts, 46 each per `HIRAGANA_SIZE`/`KATAKANA_SIZE`). `Kana` is a plain value holder.
-- **Audio**: `WidgetKana::pronounce()` plays, through a `QSoundEffect`, `qrc:/sons/ressources/sons/<romaji>.wav`. Each romaji therefore needs a matching `.wav` in `ressources/sons/` and an entry in `Sons.qrc`. (This is why `wi`/`we` are left out.)
-- **Quiz flow** (`WidgetQuizz`): the player picks a level, which sets the per-kana countdown to 10, 20, or 30 s. `TimeCompteur` (a QLCDNumber + QTimer) emits `finCompteur()` when it runs out. That counts as a mistake and moves to the next question. Answers are checked on each keystroke (`textEdited` → `gereReponse`). After more than 5 mistakes the widget emits `finPartie()`, and `FenetreKana` then shows page 3.
-- **Score persistence** (`GestionScore`): free functions that read and write a single integer best score in a plain-text file at `cheminScore()`, which is `QStandardPaths::AppDataLocation/score_data` (e.g. `%APPDATA%/Najimi/Kana Learning/` on Windows). The repo's `score_data` file is unused.
-- **Translations** (Qt Linguist): French is the source language. Every UI string goes through `tr()`, and `traductions/kanapp_en.ts` / `kanapp_ru.ts` hold the translations. Both builds compile them with `lrelease` and embed them under `:/i18n/` (CMake `qt_add_translations`, qmake `embed_translations`). `GestionLangue` installs the `QTranslator` and stores the choice in `QSettings` (key `langue`). On first launch it uses the system language if available, otherwise French. The "Langue" menu in `FenetreKana` switches language live. Each widget handles `QEvent::LanguageChange` in `changeEvent()` and resets its texts in `retraduit()`, so set UI text there rather than in constructors. Text that depends on state (score, show/hide romaji) has to be rebuilt from member variables. The kana combo box is index-based (0 hiragana, 1 katakana) because its item texts are translated. After changing strings, run `cmake --build build-linux --target update_translations`, fill in the new `<translation>` entries, and keep the `.ts` files in git. When cross-compiling, `LinguistTools` comes from the host Qt (`QT_HOST_PATH_CMAKE_DIR`), because the Windows Qt archives don't include qttools. Needs apt `qt6-l10n-tools qt6-tools-dev`.
+  Navigation calls `setCurrentIndex(n)` with these hard-coded indices, so changing the page order means updating every one of those call sites. Each page has its own toolbar (`kanaToolBar` / `quizToolBar`), and visibility is toggled per page. Every page change runs a fade animation through `FaderWidget`, and `QuizWidget` uses the same pattern internally.
+- Keyboard input for the browser is handled centrally in `MainWindow::keyPressEvent`, not in `KanaWidget`: Left/Right steps through kana, Up/Down switches between Hiragana and Katakana, Space reveals the romaji.
+- **Kana data** lives in `KanaList`, which holds parallel hard-coded arrays (hiragana, katakana, and romaji shared by both scripts, 46 each per `HIRAGANA_SIZE`/`KATAKANA_SIZE`). `Kana` is a plain value holder.
+- **Audio**: `KanaWidget::pronounce()` plays, through a `QSoundEffect`, `qrc:/sons/ressources/sons/<romaji>.wav`. Each romaji therefore needs a matching `.wav` in `ressources/sons/` and an entry in `Sons.qrc`. (This is why `wi`/`we` are left out.)
+- **Quiz flow** (`QuizWidget`): the player picks a level, which sets the per-kana countdown to 10, 20, or 30 s. `CountdownWidget` (a QLabel + QTimer) emits `finished()` when it runs out. That counts as a mistake and moves to the next question. Answers are checked on each keystroke (`textEdited` → `handleAnswer`). After more than 5 mistakes the widget emits `gameOver()`, and `MainWindow` then shows page 3.
+- **Score persistence** (`ScoreStorage`): free functions that read and write a single integer best score in a plain-text file at `scoreFilePath()`, which is `QStandardPaths::AppDataLocation/score_data` (e.g. `%APPDATA%/Najimi/Kana Learning/` on Windows). The repo's `score_data` file is unused.
+- **Translations** (Qt Linguist): English is the source language. Every UI string goes through `tr()`, and `translations/kanapp_fr.ts` / `kanapp_ru.ts` hold the translations. Both builds compile them with `lrelease` and embed them under `:/i18n/` (CMake `qt_add_translations`, qmake `embed_translations`). `Language` installs the `QTranslator` and stores the choice in `QSettings` (key `language`). On first launch it uses the system language if available, otherwise English. The "Language" menu in `MainWindow` switches language live. Each widget handles `QEvent::LanguageChange` in `changeEvent()` and resets its texts in `retranslate()`, so set UI text there rather than in constructors. Text that depends on state (score, show/hide romaji) has to be rebuilt from member variables. The kana combo box is index-based (0 hiragana, 1 katakana) because its item texts are translated. After changing strings, run `cmake --build build-linux --target update_translations`, fill in the new `<translation>` entries, and keep the `.ts` files in git. When cross-compiling, `LinguistTools` comes from the host Qt (`QT_HOST_PATH_CMAKE_DIR`), because the Windows Qt archives don't include qttools. Needs apt `qt6-l10n-tools qt6-tools-dev`.
+- Connections use the old string-based `SIGNAL()`/`SLOT()` macros, which the compiler does not check. After renaming a signal or slot, update the macros and watch the console for `QObject::connect: No such signal/slot` warnings at runtime.
 - Resource paths keep the full on-disk prefix: `:/images/ressources/images/...`, `:/sons/ressources/sons/...`.
 
 ## Dead / unwired files

@@ -7,34 +7,34 @@ ICON = kanapp.icns
 SOURCES += \
     main.cpp \
     Kana.cpp \
-    ListeKana.cpp \
-    WidgetKana.cpp \
-    FenetreKana.cpp \
-    WidgetPrincipal.cpp \
-    WidgetQuizz.cpp \
+    KanaList.cpp \
+    KanaWidget.cpp \
+    MainWindow.cpp \
+    MainMenuWidget.cpp \
+    QuizWidget.cpp \
     FaderWidget.cpp \
-    TimeCompteur.cpp \
-    WidgetFinQuizz.cpp \
-    GestionScore.cpp \
-    GestionLangue.cpp
+    CountdownWidget.cpp \
+    QuizEndWidget.cpp \
+    ScoreStorage.cpp \
+    Language.cpp
 
 HEADERS += \
     Kana.h \
-    ListeKana.h \
-    WidgetKana.h \
-    FenetreKana.h \
-    WidgetPrincipal.h \
-    WidgetQuizz.h \
+    KanaList.h \
+    KanaWidget.h \
+    MainWindow.h \
+    MainMenuWidget.h \
+    QuizWidget.h \
     FaderWidget.h \
-    TimeCompteur.h \
-    WidgetFinQuizz.h \
-    GestionScore.h \
-    GestionLangue.h
+    CountdownWidget.h \
+    QuizEndWidget.h \
+    ScoreStorage.h \
+    Language.h
 
-# le français est la langue des sources, les .qm sont intégrés sous :/i18n/
+# English is the source language, the .qm files are embedded under :/i18n/
 TRANSLATIONS += \
-    traductions/kanapp_en.ts \
-    traductions/kanapp_ru.ts
+    translations/kanapp_fr.ts \
+    translations/kanapp_ru.ts
 
 RESOURCES += \
     Images.qrc \

@@ -1,27 +1,27 @@
-#ifndef WIDGETPRINCIPAL_H
-#define WIDGETPRINCIPAL_H
+#ifndef MAINMENUWIDGET_H
+#define MAINMENUWIDGET_H
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QLabel>
 #include <QEvent>
-class WidgetPrincipal : public QWidget
+class MainMenuWidget : public QWidget
 {
     Q_OBJECT
 public:
-    WidgetPrincipal();
+    MainMenuWidget();
     QPushButton* getButtonLearn();
-    QPushButton* getButtonQuizz();
+    QPushButton* getButtonQuiz();
     void createIcons();
     void changeEvent(QEvent* event);
-    void retraduit();
+    void retranslate();
 
 signals:
 
 private:
-    QPushButton* button_quizz;
-    QPushButton* button_learn;
+    QPushButton* quiz_button;
+    QPushButton* learn_button;
 };
 
-#endif // WIDGETPRINCIPAL_H
+#endif // MAINMENUWIDGET_H

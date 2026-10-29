@@ -1,24 +1,24 @@
-#include "WidgetPrincipal.h"
-//menu de selection
-WidgetPrincipal::WidgetPrincipal()
+#include "MainMenuWidget.h"
+//selection menu
+MainMenuWidget::MainMenuWidget()
 {
-    QVBoxLayout *layout_base = new QVBoxLayout(this);
-    button_learn  =    new QPushButton;
-    button_quizz = new QPushButton;
+    QVBoxLayout *main_layout = new QVBoxLayout(this);
+    learn_button  =    new QPushButton;
+    quiz_button = new QPushButton;
 
-    QLabel *bienvenue = new QLabel("- Kana Learning -");
-    bienvenue->setFont(QFont("Ubuntu",40));
-    bienvenue->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+    QLabel *welcome_label = new QLabel("- Kana Learning -");
+    welcome_label->setFont(QFont("Ubuntu",40));
+    welcome_label->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
 
-    QLabel *nom_auteur = new QLabel("Najimi's + Misikovich's + Vadim's + Claude's App");
-    nom_auteur->setFont(QFont("Ubuntu",16));
-    nom_auteur->setWordWrap(true);
-    nom_auteur->setAlignment(Qt::AlignLeft);
+    QLabel *author_label = new QLabel("Najimi's + Misikovich's + Vadim's + Claude's App");
+    author_label->setFont(QFont("Ubuntu",16));
+    author_label->setWordWrap(true);
+    author_label->setAlignment(Qt::AlignLeft);
 
-    layout_base->addWidget(nom_auteur);
-    layout_base->addWidget(bienvenue);
+    main_layout->addWidget(author_label);
+    main_layout->addWidget(welcome_label);
 
-    button_quizz->setStyleSheet(" QPushButton {"
+    quiz_button->setStyleSheet(" QPushButton {"
                                 "     background-color: #0c8fe2;"
                                 "     border-style: outset;"
                                 "     border-width: 2px;"
@@ -32,7 +32,7 @@ WidgetPrincipal::WidgetPrincipal()
                                 "     background-color: #2e5d7b;"
                                 "     border-style: inset;"
                                 " }");
-    button_learn->setStyleSheet(" QPushButton {"
+    learn_button->setStyleSheet(" QPushButton {"
                                 "     background-color: red;"
                                 "     border-style: outset;"
                                 "     border-width: 2px;"
@@ -47,42 +47,42 @@ WidgetPrincipal::WidgetPrincipal()
                                 "     border-style: inset;"
                                 " }");
 
-    button_quizz->setMinimumSize(80,80);
-    button_learn->setMinimumSize(80,80);
+    quiz_button->setMinimumSize(80,80);
+    learn_button->setMinimumSize(80,80);
 
-    layout_base->addWidget(button_learn);
-    layout_base->addWidget(button_quizz);
+    main_layout->addWidget(learn_button);
+    main_layout->addWidget(quiz_button);
 
-    retraduit();
+    retranslate();
 
 
 }
 
-QPushButton* WidgetPrincipal::getButtonQuizz()
+QPushButton* MainMenuWidget::getButtonQuiz()
 {
-    return button_quizz;
+    return quiz_button;
 }
 
-QPushButton* WidgetPrincipal::getButtonLearn()
+QPushButton* MainMenuWidget::getButtonLearn()
 {
-    return button_learn;
+    return learn_button;
 }
 
 
-void WidgetPrincipal::changeEvent(QEvent* event)
+void MainMenuWidget::changeEvent(QEvent* event)
 {
     if (event->type()==QEvent::LanguageChange)
-        retraduit();
+        retranslate();
     QWidget::changeEvent(event);
 }
 
-void WidgetPrincipal::retraduit()
+void MainMenuWidget::retranslate()
 {
-    button_learn->setText(tr("Apprendre"));
-    button_quizz->setText(tr("Quiz"));
+    learn_button->setText(tr("Learn"));
+    quiz_button->setText(tr("Quiz"));
 }
 
-void WidgetPrincipal::createIcons()
+void MainMenuWidget::createIcons()
 {
 
 }

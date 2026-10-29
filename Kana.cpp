@@ -4,17 +4,17 @@ Kana::Kana()
 {
 }
 
-Kana::Kana(QString romaji, QString jap) : m_romaji(romaji), m_jap(jap)
+Kana::Kana(QString romaji, QString japanese) : m_romaji(romaji), m_japanese(japanese)
 {
 }
 
-Kana::Kana(QString romaji, QString jap, QString img) : m_romaji(romaji), m_jap(jap), m_img(img)
+Kana::Kana(QString romaji, QString japanese, QString image) : m_romaji(romaji), m_japanese(japanese), m_image(image)
 {
 }
 
-QString Kana::getImg()
+QString Kana::getImage()
 {
-    return m_img;
+    return m_image;
 }
 
 QString Kana::getRomaji()
@@ -22,7 +22,7 @@ QString Kana::getRomaji()
     return m_romaji;
 }
 
-QString Kana::getJap()
+QString Kana::getJapanese()
 {
-    return m_jap;
+    return m_japanese;
 }

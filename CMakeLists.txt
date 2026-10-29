@@ -19,23 +19,23 @@ endif()
 qt_add_executable(kanapp WIN32 MACOSX_BUNDLE
     main.cpp
     Kana.cpp Kana.h
-    ListeKana.cpp ListeKana.h
-    WidgetKana.cpp WidgetKana.h
-    FenetreKana.cpp FenetreKana.h
-    WidgetPrincipal.cpp WidgetPrincipal.h
-    WidgetQuizz.cpp WidgetQuizz.h
+    KanaList.cpp KanaList.h
+    KanaWidget.cpp KanaWidget.h
+    MainWindow.cpp MainWindow.h
+    MainMenuWidget.cpp MainMenuWidget.h
+    QuizWidget.cpp QuizWidget.h
     FaderWidget.cpp FaderWidget.h
-    TimeCompteur.cpp TimeCompteur.h
-    WidgetFinQuizz.cpp WidgetFinQuizz.h
-    GestionScore.cpp GestionScore.h
-    GestionLangue.cpp GestionLangue.h
+    CountdownWidget.cpp CountdownWidget.h
+    QuizEndWidget.cpp QuizEndWidget.h
+    ScoreStorage.cpp ScoreStorage.h
+    Language.cpp Language.h
     Images.qrc
     Sons.qrc
 )
 
-# French is the source language; the .qm files are embedded under :/i18n/
+# English is the source language; the .qm files are embedded under :/i18n/
 qt_add_translations(kanapp
-    TS_FILES traductions/kanapp_en.ts traductions/kanapp_ru.ts
+    TS_FILES translations/kanapp_fr.ts translations/kanapp_ru.ts
     RESOURCE_PREFIX /i18n
     LUPDATE_OPTIONS -no-obsolete
 )

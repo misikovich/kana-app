@@ -24,18 +24,18 @@ This is a **fork** of [kana-app/kana-app](https://github.com/kana-app/kana-app),
 
 ## How to use
 
-**Learn:** step through the kana with *Précédent* / *Suivant* or the Left / Right arrow keys. Switch between Hiragana and Katakana in the toolbar or with Up / Down. *Prononcer* plays the sound, and *Cacher Romaji* (or Space) hides the romaji so you can test yourself.
+**Learn:** step through the kana with *Previous* / *Next* or the Left / Right arrow keys. Switch between Hiragana and Katakana in the toolbar or with Up / Down. *Pronounce* plays the sound, and *Hide romaji* (or Space) hides the romaji so you can test yourself.
 
-**Quiz:** press *Commencer* and pick how many seconds you get per kana (10, 20 or 30). Type the romaji for the kana shown. Your input turns green while it's on track and red when it isn't. Answering quickly and getting several right in a row earns more points. The game ends after more than 5 missed kana, and your best score is saved.
+**Quiz:** press *Start* and pick how many seconds you get per kana (10, 20 or 30). Type the romaji for the kana shown. Your input turns green while it's on track and red when it isn't. Answering quickly and getting several right in a row earns more points. The game ends after more than 5 missed kana, and your best score is saved.
 
-The interface is in French.
+The interface is available in English, French and Russian: pick one from the *Language* menu. On first launch the app follows the system language.
 
 ## Building
 
-You need Qt 6 (Widgets and Multimedia), CMake and Ninja.
+You need Qt 6 (Widgets, Multimedia and the Linguist tools), CMake and Ninja.
 
 ```sh
-# Linux (Debian/Ubuntu: qt6-base-dev qt6-multimedia-dev cmake ninja-build)
+# Linux (Debian/Ubuntu: qt6-base-dev qt6-multimedia-dev qt6-l10n-tools qt6-tools-dev cmake ninja-build)
 cmake -S . -B build-linux -G Ninja
 cmake --build build-linux
 ./build-linux/kanapp

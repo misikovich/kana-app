@@ -6,15 +6,15 @@ class Kana
 {
 public:
     Kana();
-    Kana(QString romaji,QString jap);
-    Kana(QString romaji,QString jap, QString img);
-    QString getImg();
+    Kana(QString romaji,QString japanese);
+    Kana(QString romaji,QString japanese, QString image);
+    QString getImage();
     QString getRomaji();
-    QString getJap();
+    QString getJapanese();
 private:
     QString m_romaji;
-    QString m_jap;
-    QString m_img;
+    QString m_japanese;
+    QString m_image;
 };
 
 #endif // KANA_H

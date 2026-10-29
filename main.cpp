@@ -2,18 +2,18 @@
 #include <QPushButton>
 #include <QtWidgets>
 
-#include "FenetreKana.h"
-#include "GestionLangue.h"
+#include "MainWindow.h"
+#include "Language.h"
 int main(int argc, char *argv[])
 {   QApplication app(argc,argv);
 
 
     QCoreApplication::setOrganizationName("Najimi");
     QCoreApplication::setApplicationName("Kana Learning");
-    //après les noms : QSettings en dépend pour retrouver la langue choisie
-    appliqueLangue(langueInitiale());
+    //after the names: QSettings depends on them to find the chosen language
+    applyLanguage(initialLanguage());
 
-    FenetreKana fenetre;
-    fenetre.show();
+    MainWindow window;
+    window.show();
     return app.exec();
 }

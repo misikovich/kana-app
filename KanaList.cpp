@@ -1,14 +1,14 @@
-#include "ListeKana.h"
+#include "KanaList.h"
 
-ListeKana::ListeKana()
+KanaList::KanaList()
 {
-    sel=0;
+    selected=0;
 
-    /* initialisation des tableaux de chaines contenant les romajis et
-     * les hiraganas correspondant
+    /* initialisation of the string tables containing the romajis and
+     * the matching hiraganas
      */
 
-    QString tableau_hiragana[]={"あ","い","う","え","お",
+    QString hiragana_table[]={"あ","い","う","え","お",
                                 "か","き","く","け","こ",
                                 "さ","し","す","せ","そ",
                                 "た","ち","つ","て","と",
@@ -20,7 +20,7 @@ ListeKana::ListeKana()
                                 "わ",               "を",
                                "ん"};
 
-    QString tableau_romaji_hiragana[]={"a","i","u","e","o",
+    QString hiragana_romaji_table[]={"a","i","u","e","o",
                                        "ka","ki","ku","ke","ko",
                                        "sa","shi","su","se","so",
                                        "ta","chi","tsu","te","to",
@@ -32,9 +32,9 @@ ListeKana::ListeKana()
                                        "wa",               "wo",
                                        "n"};
 
-    // on enlève we et wi qui n'ont pas de fichiers audio : "ウィ" - wi , "ウェ" - we
+    // we remove we and wi, which have no audio files: "ウィ" - wi , "ウェ" - we
 
-    QString tableau_katakana[]={"ア","イ","ウ","エ","オ",
+    QString katakana_table[]={"ア","イ","ウ","エ","オ",
                                "カ","キ","ク","ケ","コ",
                                "サ","シ","ス","セ","ソ",
                                "タ","チ","ツ","テ","ト",
@@ -46,57 +46,57 @@ ListeKana::ListeKana()
                                "ワ"              ,"ヲ",
                                "ン"};
 
-    /* initialisation de la liste à afficher */
+    /* initialisation of the list to display */
     for(int i(0);i<HIRAGANA_SIZE;i++)
-        liste_hiragana.push_back(new Kana(tableau_romaji_hiragana[i],tableau_hiragana[i]));
+        hiragana_list.push_back(new Kana(hiragana_romaji_table[i],hiragana_table[i]));
 
     for(int i(0);i<KATAKANA_SIZE;i++)
-        liste_katakana.push_back(new Kana(tableau_romaji_hiragana[i],tableau_katakana[i]));
+        katakana_list.push_back(new Kana(hiragana_romaji_table[i],katakana_table[i]));
 }
 
 
-/* fonction retournant l'hiragana selectionnée ¨*/
-Kana* ListeKana::getSelection()
+/* function returning the selected hiragana */
+Kana* KanaList::getSelected()
 {
-    return liste_hiragana[sel];
+    return hiragana_list[selected];
 }
 
-/* fonction retournant l'hiragana correspondant
- * si le booléen vaut true sinon le katakana correspondant ¨*/
-Kana* ListeKana::getSelection(bool hiragana)
+/* function returning the matching hiragana
+ * if the boolean is true, otherwise the matching katakana */
+Kana* KanaList::getSelected(bool hiragana)
 {
     if (hiragana)
-        return liste_hiragana[sel];
+        return hiragana_list[selected];
     else
-        return liste_katakana[sel];
+        return katakana_list[selected];
 }
 
-/*se déplace dans la liste, renvoie false si impossible d'aller plus loin
- *le bool en paramètre indique si on veut se déplacer à droite (false)
- * ou à gauche (true)
+/*moves through the list, returns false if it is impossible to go further
+ *the boolean parameter tells whether we want to move right (false)
+ * or left (true)
  */
 
-bool ListeKana::deplaceSelection(bool gauche)
+bool KanaList::moveSelection(bool to_left)
 {
 
-    int taille = liste_hiragana.size();
-    bool deplacement_possible=( (0<sel && gauche) || (!gauche && sel<(taille-1)) );
-    if (deplacement_possible)
-        if (gauche)
-            sel--;
+    int size = hiragana_list.size();
+    bool can_move=( (0<selected && to_left) || (!to_left && selected<(size-1)) );
+    if (can_move)
+        if (to_left)
+            selected--;
         else
-            sel++;
+            selected++;
 
-    return deplacement_possible;
+    return can_move;
 }
 
 
-Kana* ListeKana::getShuffledKana()
+Kana* KanaList::getShuffledKana()
 {
-    int hasard = QRandomGenerator::global()->bounded(HIRAGANA_SIZE);
-    bool katakana = QRandomGenerator::global()->bounded(2);
-    if (!katakana)
-        return liste_hiragana[hasard];
+    int random_index = QRandomGenerator::global()->bounded(HIRAGANA_SIZE);
+    bool is_katakana = QRandomGenerator::global()->bounded(2);
+    if (!is_katakana)
+        return hiragana_list[random_index];
     else
-        return liste_katakana[hasard];
+        return katakana_list[random_index];
 }
